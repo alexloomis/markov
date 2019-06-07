@@ -13,15 +13,17 @@ See "Examples" for examples.
 -}
 module Markov (
               -- *Markov0
-              Markov0 (..)
+                Markov0 (..)
               -- *Markov
               , Markov (..)
-              -- *Event
-              , Event (..)
-              , randomEvent
+              -- *MProd
+              , MProd (..)
+              , randomMProd
               , randomPath
-              -- *Count
-              , Count (..)
+              -- *MSum
+              , MSum (..)
+              -- *MNull
+              , MNull (..)
               ) where
 
 import Control.Applicative
@@ -38,7 +40,6 @@ import qualified Control.Monad.Random as MR
 class (Eq m) => Markov0 m where
     -- |The transition functions from a state, and the probability of each transition.
     transition0 :: m -> [m -> m]
-    -- The possible outcomes from an 'Event'.
     step0       :: m -> [m]
     -- |Iterated steps.
     chain0      :: [m] -> [[m]]
@@ -50,87 +51,108 @@ class (Eq m) => Markov0 m where
 ---------------------------------------------------------------
 
 -- |An implementation of markov chains.
+-- Instances of Markov should follow the law:
+--
+-- prop> transition (f x) == transition (pure x)
 class Applicative f => Markov f m where
     -- |The transition functions from a state, and the probability of each transition.
     transition :: f m -> [f (m -> m)]
     step       :: f m -> [f m]
-    -- |Iterated steps, without duplicate states combined.
-    links      :: [f m] -> [[f m]]
     -- |Iterated steps with equal states combined using 'Semigroup' operation.
     -- Requires 'Ord' instead of 'Eq' to greatly speed up implementation,
     -- order can be arbitrary though.
     chain      :: (Ord (f m), Semigroup (f m)) => [f m] -> [[f m]]
     step x = fmap (x <**>) (transition x)
-    links  = iterate $ concatMap step
     chain  = DL.iterate' $ map sconcat . gather . concatMap step
         where gather = NE.group . DL.sort
 
 ---------------------------------------------------------------
--- Event
+-- MProd
 ---------------------------------------------------------------
 
 -- |An applicative to be used with Markov for basic stochastic analysis.
-data Event a b = Event { prob  :: a -- ^This should usually be a number between 0 and 1, inclusive.
-                       , event :: b }
+-- Tracks a multiplicative value.
+data MProd a b = MProd { prod   :: a
+                       , pstate :: b }
                        deriving Show
 
--- |Events are equal if they contain the same 'event', ignoring 'prob'.
-instance (Eq b) => Eq (Event a b) where
-    (==) x y = event x == event y
+-- |MProds are equal if they contain the same 'pstate', ignoring 'prod'.
+instance (Eq b) => Eq (MProd a b) where
+    (==) x y = pstate x == pstate y
 
-instance (Ord b) => Ord (Event a b) where
-    compare x y = compare (event x) (event y)
+instance (Ord b) => Ord (MProd a b) where
+    compare x y = compare (pstate x) (pstate y)
 
-instance Functor (Event a) where
-    fmap f x = Event { prob  = prob x
-                     , event = f $ event x }
+instance Functor (MProd a) where
+    fmap f x = MProd { prod = prod x
+                     , pstate = f $ pstate x }
 
--- Given \(x\) a probability of a transition
--- and \(y\) a probability of a event,
--- the probability of being in that event
--- and performing the transition is \(xy\).
-instance Num a => Applicative (Event a) where
-    pure x = Event { prob  = 1
-                   , event = x }
-    (<*>) f x = Event { prob  = prob f * prob x
-                      , event = event f $ event x }
+instance Num a => Applicative (MProd a) where
+    pure x = MProd { prod = 1
+                   , pstate = x }
+    (<*>) f x = MProd { prod = prod f * prod x
+                      , pstate = pstate f $ pstate x }
 
-instance Num a => Monad (Event a) where
-    (>>=) x f = Event { prob  = prob x * (prob . f . event $ x)
-                      , event = event . f . event $ x }
+instance Num a => Monad (MProd a) where
+    (>>=) x f = MProd { prod = prod x * (prod . f . pstate  $ x)
+                      , pstate = pstate . f . pstate $ x }
 
--- Let \(X_k\) be the event of a chain at time \(k\).
--- Then \(P[X_{k+1} = x_0] = \sum_{x_i} P[X_{k+1} = x_0 \mid X_k = x_i]\).
-instance Num a => Semigroup (Event a b) where
-    (<>) x y = Event { prob  = prob x + prob y
-                     , event = event x }
+-- \(P[X_{k+1} = x_0] = \sum_{x_i} P[X_{k+1} = x_0 \mid X_k = x_i]\).
+instance Num a => Semigroup (MProd a b) where
+    (<>) x y = MProd { prod = prod x + prod y
+                     , pstate = pstate x }
 
--- |Randomly chooses an 'Event' by probability.
-randomEvent :: (Real a, MR.MonadRandom m) => [Event a b] -> m (Event a b)
-randomEvent xs = MR.fromList . map (\x -> (x, toRational $ prob x)) $ xs
+-- |Randomly chooses an 'MProd' by probability.
+randomMProd :: (Real a, MR.MonadRandom m) => [MProd a b] -> m (MProd a b)
+randomMProd xs = MR.fromList . map (\x -> (x, toRational $ prod x)) $ xs
 
 -- |Returns a single realization of a Markov chain.
-randomPath :: (Markov (Event a) b, Real a, MR.RandomGen g) => Event a b -> g -> [Event a b]
-randomPath x g = map (flip MR.evalRand g) . iterate (>>= (randomEvent . step)) $ pure x
+randomPath :: (Markov (MProd a) b, Real a, MR.RandomGen g) => MProd a b -> g -> [MProd a b]
+randomPath x g = map (flip MR.evalRand g) . iterate (>>= (randomMProd . step)) $ pure x
 
 ---------------------------------------------------------------
--- Count
+-- MSum
 ---------------------------------------------------------------
 
--- |An example applicative to be used with Markov.
-data Count a b = Count { total :: a
-                       , state :: b }
-                       deriving (Eq, Ord, Show)
-instance Functor (Count a) where
-    fmap f x = Count { total = total x
-                     , state = f $ state x }
-instance Num a => Applicative (Count a) where
-    pure x = Count { total = 0
-                   , state = x }
-    (<*>) f x = Count { total = total f + total x
-                      , state = state f $ state x }
-instance Num a => Monad (Count a) where
-    (>>=) x f = Count { total = total x + (total . f . state $ x)
-                      , state = state . f . state $ x }
-instance Num a => Semigroup (Count a b) where
+-- |An applicative to be used with Markov.
+-- Tracks an additive value.
+data MSum a b = MSum { total :: a
+                     , mstate :: b }
+                     deriving (Eq, Ord, Show)
+
+instance Functor (MSum a) where
+    fmap f x = MSum { total = total x
+                    , mstate = f $ mstate x }
+
+instance Num a => Applicative (MSum a) where
+    pure x = MSum { total = 0
+                  , mstate = x }
+    (<*>) f x = MSum { total = total f + total x
+                     , mstate = mstate f $ mstate x }
+
+instance Num a => Monad (MSum a) where
+    (>>=) x f = MSum { total = total x + (total . f . mstate $ x)
+                     , mstate = mstate . f . mstate $ x }
+
+instance Num a => Semigroup (MSum a b) where
+    (<>) x _ = x
+
+---------------------------------------------------------------
+-- MNull
+---------------------------------------------------------------
+
+-- |An applicative for Markov that does not track anything.
+-- @instance Markov MNull a@
+-- is the same as @instance Markov0 a@
+-- Since 'Markov0' is faster, it should usually be prefered.
+newtype MNull a = MNull {estate :: a} deriving (Eq, Ord, Show)
+
+instance Functor MNull where
+    fmap f (MNull a) = MNull $ f a
+
+instance Applicative MNull where
+    pure x = MNull x
+    (<*>) (MNull f) x = fmap f x
+
+instance Eq a => Semigroup (MNull a) where
     (<>) x _ = x

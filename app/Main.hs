@@ -41,14 +41,14 @@ main = do
 readable :: Show a => [a] -> IO ()
 readable = putStrLn . intercalate "\n" . fmap show
 
-initials :: (Integral a, Fractional b) => a -> a -> [[Int]] -> [Event b State]
-initials n b = map (\x -> Event (1/(fromIntegral $ n `choose` b)) (initial x))
+initials :: (Integral a, Fractional b) => a -> a -> [[Int]] -> [MProd b FillBin]
+initials n b = map (\x -> MProd (1/(fromIntegral $ n `choose` b)) (initial x))
 
--- States corresponding to partitions created by picking b items from n items.
+-- FillBins corresponding to partitions created by picking b items from n items.
 partitions :: Int -> Int -> [[Int]]
 partitions n b = filter (\x -> sum x == n-b) $ iterate grow [[]] !! (b+1)
     where grow z = [ x:y | x <- [0..n-b], y <- z ]
 
 -- The expected loss given there are n items and b bins.
--- runLoss :: Markov a State => Int -> Int -> a
+-- runLoss :: Markov a FillBin => Int -> Int -> a
 runLoss n b = expectedLoss . initials n b $ partitions n b

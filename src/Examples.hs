@@ -6,13 +6,14 @@ Description : Examples of Markov chains implemented using "Markov".
 Maintainer  : atloomis@math.arizona.edu
 Stability   : experimental
 
-Several examples of Markov chains,
-implemented with 'Markov'.
+Several examples of Markov chains, implemented with 'Markov'.
 -}
 module Examples ( Simple (..)
                 , Urn (..)
+                , Extinction (..)
+                , State (..)
                 , Tidal (..)
-                , State
+                , FillBin
                 , initial
                 , expectedLoss
                 ) where
@@ -33,45 +34,43 @@ import Markov
 --
 -- Probability of each outcome:
 --
--- >>> take 3 $ chain [pure $ Simple 0 :: Event Double Simple]
--- [[Event {prob = 1.0, event = Simple 0}]
--- ,[Event {prob = 0.5, event = Simple (-1)},Event {prob = 0.5, event = Simple 1}]
--- ,[Event {prob = 0.25, event = Simple (-2)},Event {prob = 0.5, event = Simple 0},Event {prob = 0.25, event = Simple 2}]]
+-- >>> take 3 $ chain [pure $ Simple 0 :: MProd Double Simple]
+-- [[MProd {prod = 1.0, pstate = Simple 0}]
+-- ,[MProd {prod = 0.5, pstate = Simple (-1)},MProd {prod = 0.5, pstate = Simple 1}]
+-- ,[MProd {prod = 0.25, pstate = Simple (-2)},MProd {prod = 0.5, pstate = Simple 0},MProd {prod = 0.25, pstate = Simple 2}]]
 --
 -- Number of ways to achieve each outcome:
 --
--- >>> take 3 $ chain [pure $ Simple 0 :: Event Int Simple]
--- [[Event {prob = 1, event = Simple 0}]
--- ,[Event {prob = 1, event = Simple (-1)},Event {prob = 1, event = Simple 1}]
--- ,[Event {prob = 1, event = Simple (-2)},Event {prob = 2, event = Simple 0},Event {prob = 1, event = Simple 2}]]
+-- >>> take 3 $ chain [pure $ Simple 0 :: MProd Int Simple]
+-- [[MProd {prod = 1, pstate = Simple 0}]
+-- ,[MProd {prod = 1, pstate = Simple (-1)},MProd {prod = 1, pstate = Simple 1}]
+-- ,[MProd {prod = 1, pstate = Simple (-2)},MProd {prod = 2, pstate = Simple 0},MProd {prod = 1, pstate = Simple 2}]]
 --
 -- Number of times @pred@ was applied,
 -- allowing steps in place (@id@)
 -- for more interesting output:
 --
--- >>> chain [pure $ Simple 0 :: Count Int Simple] !! 2
--- [ Count {total = 0, state = Simple 0}
--- , Count {total = 0, state = Simple 1}
--- , Count {total = 0, state = Simple 2}
--- , Count {total = 1, state = Simple (-1)}
--- , Count {total = 1, state = Simple 0}
--- , Count {total = 2, state = Simple (-2)} ]
+-- >>> chain [pure $ Simple 0 :: MSum Int Simple] !! 2
+-- [ MSum {total = 0, mstate = Simple 0}
+-- , MSum {total = 0, mstate = Simple 1}
+-- , MSum {total = 0, mstate = Simple 2}
+-- , MSum {total = 1, mstate = Simple (-1)}
+-- , MSum {total = 1, mstate = Simple 0}
+-- , MSum {total = 2, mstate = Simple (-2)} ]
 
 newtype Simple = Simple Int deriving (Enum, Eq, Ord, Show)
 instance Markov0 Simple where
     transition0 _ = [pred, succ]
-instance Markov (Event Int) Simple where
-    transition _ = [ Event 1 pred
-                   , Event 1 succ ]
-instance Markov (Event Double) Simple where
-    transition _ = [ Event 0.5 pred
-                   , Event 0.5 succ ]
--- Ex: @chain [pure $ Simple 0 :: Count Int Simple] !! 3@
--- returns number of @pred@ applied at each possible outcome at time 3.
-instance Markov (Count Int) Simple where
-    transition _ = [ Count 1 pred
-                   , Count 0 id
-                   , Count 0 succ ]
+instance Markov (MProd Int) Simple where
+    transition _ = [ MProd 1 pred
+                   , MProd 1 succ ]
+instance Markov (MProd Double) Simple where
+    transition _ = [ MProd 0.5 pred
+                   , MProd 0.5 succ ]
+instance Markov (MSum Int) Simple where
+    transition _ = [ MSum 1 pred
+                   , MSum 0 id
+                   , MSum 0 succ ]
 
 ---------------------------------------------------------------
 -- Urn model
@@ -81,13 +80,58 @@ instance Markov (Count Int) Simple where
 -- At each step, a ball is chosen uniformly at random from the urn
 -- and a ball of the same color is added.
 newtype Urn = Urn (Int,Int) deriving (Eq, Ord, Show)
-instance Markov (Event Double) Urn where
-    transition (Event _ x) = [ Event (probLeft x)     addLeft
-                             , Event (1 - probLeft x) addRight]
+instance Markov (MProd Double) Urn where
+    transition (MProd _ x) = [ MProd (probLeft x)     addLeft
+                             , MProd (1 - probLeft x) addRight]
 
 addLeft  (Urn (a,b)) = Urn (a+1,b)
 addRight (Urn (a,b)) = Urn (a,b+1)
 probLeft (Urn (a,b)) = (fromIntegral a)/(fromIntegral $ a + b)
+
+---------------------------------------------------------------
+-- Tutorial
+---------------------------------------------------------------
+
+-- |This is the chain from the README.
+data Extinction a = Extinction { death :: Int
+                               , prob  :: Rational
+                               , state :: a }
+                               deriving Show
+
+instance Eq a => Eq (Extinction a) where
+    x == y = state x == state y && death x == death y
+
+instance Semigroup (Extinction a) where
+    x <> y = Extinction { death = death x -- death x == death y
+                        , prob  = prob x + prob y
+                        , state = state x -- state x == state y
+                        }
+
+instance (Ord a) => Ord (Extinction a) where
+    compare x y = compare (state x) (state y)
+                  `mappend`
+                  compare (death x) (death y)
+
+instance Functor Extinction where
+    fmap f (Extinction d p s) = Extinction d p (f s)
+
+instance Applicative Extinction where
+    pure x = Extinction 0 1 x
+    x <*> y = Extinction { death = death x + death y
+                         , prob  = prob  x * prob  y
+                         , state = state x $ state y }
+
+-- |This is the chain from the README.
+newtype State = State Int deriving (Eq, Num, Ord, Show)
+
+instance Markov Extinction State where
+    transition x = case state x of
+        State 0 -> [ Extinction 0 (q+r) id
+                   , Extinction 0 s (+1) ]
+        _       -> [ Extinction 1 q (\_ -> 0)
+                   , Extinction 0 r id
+                   , Extinction 0 s (+1) ]
+        where q = 0.1; r = 0.3; s = 0.6
 
 ---------------------------------------------------------------
 -- More complex random walk
@@ -99,9 +143,9 @@ probLeft (Urn (a,b)) = (fromIntegral a)/(fromIntegral $ a + b)
 data Tidal = Tidal { time     :: Double
                    , position :: Int }
                    deriving (Eq, Ord, Show)
-instance Markov (Event Double) Tidal where
-    transition (Event _ tw) = [ Event (probRight tw) $ stepPos (+1)
-                              , Event (1 - (probRight tw)) $ stepPos (flip (-) 1) ]
+instance Markov (MProd Double) Tidal where
+    transition (MProd _ tw) = [ MProd (probRight tw) $ stepPos (+1)
+                              , MProd (1 - (probRight tw)) $ stepPos (flip (-) 1) ]
 
 stepPos :: (Int -> Int) -> Tidal -> Tidal
 stepPos f tw = Tidal (time tw + 1) (f $ position tw)
@@ -126,7 +170,7 @@ type Index = Int
 type Gap   = Int
 type Full  = Int
 type Open  = Int
-type Trans = State -> State
+type Trans = FillBin -> FillBin
 
 -- |A collection of bins with gaps between them.
 -- At each step an empty space is chosen
@@ -135,17 +179,17 @@ type Trans = State -> State
 -- If it is in a gap, it is assigned to an adjacent bin,
 -- which expands to contain it and any intervening spaces,
 -- and then the space filled.
-data State = End Gap | Ext Gap Bin State deriving (Eq, Ord)
-instance Show State where
+data FillBin = End Gap | Ext Gap Bin FillBin deriving (Eq, Ord)
+instance Show FillBin where
     show (Ext g b s) = show g ++ " " ++ show b ++ " " ++ show s
     show (End g) = show g
-instance Markov (Event Double) State where
-    transition (Event _ x) = case probId x of
-        0 -> filter (\(Event y _) -> y /= 0)
-            $  [Event (probAdd i x) (addItem i) | i <- indices]
-            ++ [Event (probGrowL i x) (addItem i . growLeft  j i)
+instance Markov (MProd Double) FillBin where
+    transition (MProd _ x) = case probId x of
+        0 -> filter (\(MProd y _) -> y /= 0)
+            $  [MProd (probAdd i x) (addItem i) | i <- indices]
+            ++ [MProd (probGrowL i x) (addItem i . growLeft  j i)
                 | i <- indices, j <- [1..gapN (i-1) x]]
-            ++ [Event (probGrowR i x) (addItem i . growRight j i)
+            ++ [MProd (probGrowR i x) (addItem i . growRight j i)
                 | i <- indices, j <- [1..gapN i x]]
         1 -> [pure id]
         _ -> error "Pattern not matched in transition"
@@ -153,7 +197,7 @@ instance Markov (Event Double) State where
 
 -- |>>> fromLists [1,3,5,10] [(3,5),(9,9),(8,3)]
 -- 1 (3,5) 3 (9,9) 5 (8,3) 10
-fromLists :: [Gap] -> [Bin] -> State
+fromLists :: [Gap] -> [Bin] -> FillBin
 fromLists gaps bins = case (gaps,bins) of
     (g:_  , []  ) -> End g
     ([g]  , _   ) -> End g
@@ -164,45 +208,45 @@ fromLists gaps bins = case (gaps,bins) of
 --
 -- >>> initial [5,7,0]
 -- 5 (0,0) 7 (0,0) 0
-initial :: [Int] -> State
+initial :: [Int] -> FillBin
 initial gs = fromLists gs $ repeat (0,0)
 
 -- |The number of bins.
-size :: State -> Int
+size :: FillBin -> Int
 size x = case x of
     End _ -> 0
     Ext _ _ s -> 1 + size s
 
 -- |The bins of a state.
-getBins :: State -> [Bin]
+getBins :: FillBin -> [Bin]
 getBins x = case x of
     End _ -> []
     Ext _ b s -> b:getBins s
 
 -- |The open values of a state.
-getOpen :: State -> [Open]
+getOpen :: FillBin -> [Open]
 getOpen x = map fst $ getBins x
 
 -- |The open value of the Nth bin.
-openN :: Index -> State -> Open
+openN :: Index -> FillBin -> Open
 openN i x = (getOpen x)!!(i-1)
 
 -- |The full values of a state.
-getFull :: State -> [Full]
+getFull :: FillBin -> [Full]
 getFull x = map snd $ getBins x
 
 -- |The full value of the Nth bin.
-fullN :: Index -> State -> Full
+fullN :: Index -> FillBin -> Full
 fullN i x = (getFull x)!!(i-1)
 
 -- |The gap values of a state.
-getGap :: State -> [Gap]
+getGap :: FillBin -> [Gap]
 getGap x = case x of
     End g -> [g]
     Ext g _ s -> g:getGap s
 
 -- |Warning! Indexed from zero!
-gapN :: Index -> State -> Gap
+gapN :: Index -> FillBin -> Gap
 gapN i x = (getGap x)!!i
 
 -- |The command @iApply i f s@ is analagous to
@@ -235,11 +279,11 @@ growRight j = iApply h
               Ext g b t -> Ext (g-j) b t
 
 -- |The sum of all open slots in bins and gaps.
-slots :: State -> Int
+slots :: FillBin -> Int
 slots x = sum $ getGap x ++ getOpen x
 
 -- |The probability that a state returns to itself.
-probId :: Num a => State -> a
+probId :: Num a => FillBin -> a
 probId x = case slots x == 0 of
     True  -> 1
     False -> 0
@@ -248,18 +292,18 @@ divInt :: (Integral a, Integral b, Fractional c) => a -> b -> c
 divInt x y = (fromIntegral x)/(fromIntegral y)
 
 -- |The probability that the ith bin gains an item.
-probAdd :: Fractional a => Index -> State -> a
+probAdd :: Fractional a => Index -> FillBin -> a
 probAdd i x = openN i x `divInt` slots x
 
 -- |The probability that the ith bin expands to the left.
-probGrowL :: Fractional a => Index -> State -> a
+probGrowL :: Fractional a => Index -> FillBin -> a
 probGrowL i x = case test of
     True  -> 1 `divInt` slots x
     False -> 0
     where test = i == 1 || fullN i x < fullN (i-1) x
 
 -- |The probability that the ith bin expands to the right.
-probGrowR :: Fractional a => Index -> State -> a
+probGrowR :: Fractional a => Index -> FillBin -> a
 probGrowR i x = case test of
     True  -> 1 `divInt` slots x
     False -> 0
@@ -271,20 +315,20 @@ probGrowR i x = case test of
 
 -- |The \(l^2\) distance between a finished state
 -- and a state with perfectly balanced bins.
-individualLoss :: Fractional a => State -> a
+individualLoss :: Fractional a => FillBin -> a
 individualLoss x = sum . map f . getFull $ x
     where f y = (fromIntegral y - ideal)^2
           ideal = sum (getFull x) `divInt` size x
 
-probLoss :: Fractional a => Event a State -> a
-probLoss pstate = prob pstate * (individualLoss $ event pstate)
+probLoss :: Fractional a => MProd a FillBin -> a
+probLoss x = prod x * (individualLoss $ pstate x)
 
--- |Expected loss of a set of events of @State@s.
+-- |Expected loss of a set of pstates of @['FillBin']@.
 -- Loss is the \(l^2\) distance between a finished state
 -- and a state with perfectly balanced bins.
 --
--- >>> expectedLoss [Event (1.0 :: Double) $ initial [1,0,3]]
+-- >>> expectedLoss [MProd (1.0 :: Double) $ initial [1,0,3]]
 -- 2.0
-expectedLoss :: (Fractional a, Eq a, Markov (Event a) State) => [Event a State] -> a
-expectedLoss pstates = sum . map probLoss $ (chain pstates) !! index
-    where index = slots . event . head $ pstates
+expectedLoss :: (Fractional a, Eq a, Markov (MProd a) FillBin) => [MProd a FillBin] -> a
+expectedLoss xs = sum . map probLoss $ (chain xs) !! index
+    where index = slots . pstate . head $ xs
