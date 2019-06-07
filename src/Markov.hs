@@ -21,6 +21,7 @@ module Markov (
               , MProd (..)
               , randomMProd
               , randomPath
+              , fromLists
               -- *MSum
               , MSum (..)
               -- *MNull
@@ -110,6 +111,14 @@ randomMProd xs = MR.fromList . map (\x -> (x, toRational $ prod x)) $ xs
 -- |Returns a single realization of a Markov chain.
 randomPath :: (Markov (MProd a) b, Real a, MR.RandomGen g) => MProd a b -> g -> [MProd a b]
 randomPath x g = map (flip MR.evalRand g) . iterate (>>= (randomMProd . step)) $ pure x
+
+-- |Create a transition function from a transition matrix.
+-- If [[a]] is an n x n matrix, length [b] should be n.
+fromLists :: Eq  b => [[a]] -> [b] -> MProd a b -> [MProd a (b -> b)]
+fromLists matrix states (MProd _ b) = case DL.elemIndex b states of
+    Nothing -> []
+    Just n  -> zipWith MProd (matrix!!n) toState
+    where toState = map (\x -> (\_ -> x)) states
 
 ---------------------------------------------------------------
 -- MSum
