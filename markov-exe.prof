@@ -1,0 +1,996 @@
+	Thu Jun  6 12:33 2019 Time and Allocation Profiling Report  (Final)
+
+	   markov-exe +RTS -N -p -RTS -i14 -b7
+
+	total time  =        2.95 secs   (11786 ticks @ 1000 us, 4 processors)
+	total alloc = 6,378,360,816 bytes  (excludes profiling overheads)
+
+COST CENTRE        MODULE    SRC                                %time %alloc
+
+partitions.\       Main      app/Main.hs:49:32-43                33.9    0.0
+compare            Examples  src/Examples.hs:92:56-58            18.0    0.0
+chain.gather       Markov    src/Markov.hs:46:15-41               7.6   16.7
+transition         Examples  src/Examples.hs:(97,5)-(106,35)      6.4    7.4
+partitions.grow    Main      app/Main.hs:50:11-50                 3.8   24.0
+getOpen            Examples  src/Examples.hs:135:1-31             2.4   10.4
+getBins            Examples  src/Examples.hs:(129,1)-(131,28)     2.4    8.9
+==                 Examples  src/Examples.hs:92:52-53             2.2    0.0
+getGap             Examples  src/Examples.hs:(151,1)-(153,27)     1.9    5.3
+iApply             Examples  src/Examples.hs:(162,1)-(165,46)     1.8    6.3
+compare            Markov    src/Markov.hs:59:5-49                1.7    0.0
+<*>                Markov    src/Markov.hs:(70,5)-(71,51)         1.6    0.6
+partitions         Main      app/Main.hs:(49,1)-(50,50)           1.6    0.0
+getFull            Examples  src/Examples.hs:143:1-31             1.4    5.9
+gapN               Examples  src/Examples.hs:157:1-24             1.2    0.2
+step               Markov    src/Markov.hs:43:5-53                1.1    3.9
+slots              Examples  src/Examples.hs:190:1-37             1.0    0.5
+chain              Markov    src/Markov.hs:(45,5)-(46,41)         0.9    2.7
+transition.indices Examples  src/Examples.hs:106:15-35            0.5    2.2
+growRight.h        Examples  src/Examples.hs:(182,11)-(183,61)    0.4    1.1
+
+
+                                                                                                                                                                     individual      inherited
+COST CENTRE                                       MODULE                               SRC                                                       no.      entries  %time %alloc   %time %alloc
+
+MAIN                                              MAIN                                 <built-in>                                                1240          0    0.0    0.0   100.0  100.0
+ CAF                                              GHC.Conc.Signal                      <entire-module>                                           1344          0    0.0    0.0     0.0    0.0
+ CAF                                              GHC.Float                            <entire-module>                                           1337          0    0.0    0.0     0.0    0.0
+ CAF                                              GHC.IO.Encoding                      <entire-module>                                           1327          0    0.0    0.0     0.0    0.0
+ CAF                                              GHC.IO.Encoding.Iconv                <entire-module>                                           1325          0    0.0    0.0     0.0    0.0
+ CAF                                              GHC.IO.Handle.FD                     <entire-module>                                           1316          0    0.0    0.0     0.0    0.0
+ CAF                                              GHC.IO.Handle.Text                   <entire-module>                                           1314          0    0.0    0.0     0.0    0.0
+ CAF                                              Text.Read.Lex                        <entire-module>                                           1277          0    0.0    0.0     0.0    0.0
+ CAF                                              GHC.Event.Thread                     <entire-module>                                           1270          0    0.0    0.0     0.0    0.0
+ CAF                                              GHC.Event.Poll                       <entire-module>                                           1256          0    0.0    0.0     0.0    0.0
+ CAF:$fAlternativeParser3                         Options.Applicative.Types            <no location info>                                        2258          0    0.0    0.0     0.0    0.0
+  return                                          Options.Applicative.Types            Options/Applicative/Types.hs:246:3-15                     2831          1    0.0    0.0     0.0    0.0
+ CAF:$fAlternativeParser_$c<|>                    Options.Applicative.Types            Options/Applicative/Types.hs:274:3-7                      2263          0    0.0    0.0     0.0    0.0
+  <|>                                             Options.Applicative.Types            Options/Applicative/Types.hs:274:3-14                     2541          1    0.0    0.0     0.0    0.0
+ CAF:$fAlternativeParser_$cempty                  Options.Applicative.Types            Options/Applicative/Types.hs:273:3-7                      2262          0    0.0    0.0     0.0    0.0
+  empty                                           Options.Applicative.Types            Options/Applicative/Types.hs:273:3-22                     2658          1    0.0    0.0     0.0    0.0
+ CAF:$fAlternativeParser_$cpure                   Options.Applicative.Types            Options/Applicative/Types.hs:239:3-6                      2264          0    0.0    0.0     0.0    0.0
+  pure                                            Options.Applicative.Types            Options/Applicative/Types.hs:239:3-20                     2725          1    0.0    0.0     0.0    0.0
+ CAF:$fAlternativeReadM2                          Options.Applicative.Types            <no location info>                                        2205          0    0.0    0.0     0.0    0.0
+  pure                                            Options.Applicative.Types            Options/Applicative/Types.hs:168:3-21                     3070          1    0.0    0.0     0.0    0.0
+ CAF:$fApplicativeParser_$c<*>                    Options.Applicative.Types            Options/Applicative/Types.hs:240:3-7                      2265          0    0.0    0.0     0.0    0.0
+  <*>                                             Options.Applicative.Types            Options/Applicative/Types.hs:240:3-15                     2561          1    0.0    0.0     0.0    0.0
+ CAF:$fMarkovEventState_f2                        Examples                             <no location info>                                        1538          0    0.0    0.0     0.0    0.0
+  chain                                           Markov                               src/Markov.hs:(45,5)-(46,41)                              3297          0    0.0    0.0     0.0    0.0
+   chain.gather                                   Markov                               src/Markov.hs:46:15-41                                    3298          1    0.0    0.0     0.0    0.0
+ CAF:$fMonadPP3                                   Options.Applicative.Internal         <no location info>                                        2174          0    0.0    0.0     0.0    0.0
+  getPrefs                                        Options.Applicative.Internal         Options/Applicative/Internal.hs:78:3-34                   2494          1    0.0    0.0     0.0    0.0
+ CAF:$fMonadP_$creturn                            Options.Applicative.Internal         Options/Applicative/Internal.hs:63:3-8                    2179          0    0.0    0.0     0.0    0.0
+  return                                          Options.Applicative.Internal         Options/Applicative/Internal.hs:63:3-15                   2654          1    0.0    0.0     0.0    0.0
+ CAF:$fMonadReadM2                                Options.Applicative.Types            <no location info>                                        2206          0    0.0    0.0     0.0    0.0
+  return                                          Options.Applicative.Types            Options/Applicative/Types.hs:176:3-15                     3069          1    0.0    0.0     0.0    0.0
+ CAF:$fMonoidDefaultProp_$cmempty                 Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:92:3-8            2358          0    0.0    0.0     0.0    0.0
+  mempty                                          Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:92:3-38           2609          1    0.0    0.0     0.0    0.0
+ CAF:$fMonoidMod_$cmappend                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:136:3-9           2361          0    0.0    0.0     0.0    0.0
+  mappend                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:136:3-16          2599          1    0.0    0.0     0.0    0.0
+ CAF:$fMonoidMod_$cmempty                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:135:3-8           2360          0    0.0    0.0     0.0    0.0
+  mempty                                          Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:135:3-27          3227          1    0.0    0.0     0.0    0.0
+ CAF:$fMonoidPrefsMod1                            Options.Applicative.Builder          <no location info>                                        2385          0    0.0    0.0     0.0    0.0
+  mempty                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:456:3-22                   2507          1    0.0    0.0     0.0    0.0
+ CAF:abortOption3                                 Options.Applicative.Builder          <no location info>                                        2399          0    0.0    0.0     0.0    0.0
+  abortOption                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:(339,1)-(342,16)           3222          0    0.0    0.0     0.0    0.0
+   metavar                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:199:1-55                   3223          1    0.0    0.0     0.0    0.0
+ CAF:abortOption4                                 Options.Applicative.Builder          <no location info>                                        2397          0    0.0    0.0     0.0    0.0
+  abortOption                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:(339,1)-(342,16)           3224          0    0.0    0.0     0.0    0.0
+   metavar                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:199:1-55                   3225          0    0.0    0.0     0.0    0.0
+    optionMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          3226          0    0.0    0.0     0.0    0.0
+ CAF:abortOption6                                 Options.Applicative.Builder          <no location info>                                        2398          0    0.0    0.0     0.0    0.0
+  abortOption                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:(339,1)-(342,16)           3220          0    0.0    0.0     0.0    0.0
+   value                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:171:1-50                   3221          1    0.0    0.0     0.0    0.0
+ CAF:addItem_ract                                 Examples                             src/Examples.hs:169:1-7                                   1552          0    0.0    0.0     0.0    0.0
+  addItem                                         Examples                             src/Examples.hs:(169,1)-(171,59)                          3337          1    0.0    0.0     0.0    0.0
+ CAF:defaultPrefs                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:514:1-12                   2422          0    0.0    0.0     0.0    0.0
+  defaultPrefs                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:514:1-24                   2503          1    0.0    0.0     0.0    0.0
+   idm                                            Options.Applicative.Builder          Options/Applicative/Builder.hs:510:1-12                   2506          1    0.0    0.0     0.0    0.0
+   prefs                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:(496,1)-(504,26)           2504          1    0.0    0.0     0.0    0.0
+    applyPrefsMod                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:453:5-17                   2505          1    0.0    0.0     0.0    0.0
+ CAF:defaultPrefs1                                Options.Applicative.Builder          <no location info>                                        2421          0    0.0    0.0     0.0    0.0
+  defaultPrefs                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:514:1-24                   2508          0    0.0    0.0     0.0    0.0
+   prefs                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:(496,1)-(504,26)           2509          0    0.0    0.0     0.0    0.0
+    prefs.base                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:(498,5)-(504,26)           2510          1    0.0    0.0     0.0    0.0
+ CAF:execParser1                                  Options.Applicative.Extra            <no location info>                                        2352          0    0.0    0.0     0.0    0.0
+  execParser                                      Options.Applicative.Extra            Options/Applicative/Extra.hs:72:1-42                      2482          1    0.0    0.0     0.0    0.0
+ CAF:fullDesc1                                    Options.Applicative.Builder          <no location info>                                        2404          0    0.0    0.0     0.0    0.0
+  fullDesc                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:385:1-52                   2527          1    0.0    0.0     0.0    0.0
+ CAF:helper                                       Options.Applicative.Extra            Options/Applicative/Extra.hs:49:1-6                       2332          0    0.0    0.0     0.0    0.0
+  helper                                          Options.Applicative.Extra            Options/Applicative/Extra.hs:(49,1)-(53,12)               3213          1    0.0    0.0     0.0    0.0
+   abortOption                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:(339,1)-(342,16)           3214          1    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3228          4    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    3246          4    0.0    0.0     0.0    0.0
+    noArgError                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:192:1-61                   3218          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3219          1    0.0    0.0     0.0    0.0
+    option                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           3215          1    0.0    0.0     0.0    0.0
+     mkParser                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  3248          1    0.0    0.0     0.0    0.0
+     option.(...)                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   3217          1    0.0    0.0     0.0    0.0
+      <>                                          Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3244          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    3245          1    0.0    0.0     0.0    0.0
+     option.d                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   3216          1    0.0    0.0     0.0    0.0
+ CAF:helper1                                      Options.Applicative.Extra            <no location info>                                        2331          0    0.0    0.0     0.0    0.0
+  helper                                          Options.Applicative.Extra            Options/Applicative/Extra.hs:(49,1)-(53,12)               3229          0    0.0    0.0     0.0    0.0
+   <>                                             Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3243          4    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    3247          4    0.0    0.0     0.0    0.0
+ CAF:helper10                                     Options.Applicative.Extra            <no location info>                                        2329          0    0.0    0.0     0.0    0.0
+  helper                                          Options.Applicative.Extra            Options/Applicative/Extra.hs:(49,1)-(53,12)               3233          0    0.0    0.0     0.0    0.0
+   short                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:155:1-34                   3234          1    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3235          1    0.0    0.0     0.0    0.0
+ CAF:helper13                                     Options.Applicative.Extra            <no location info>                                        2330          0    0.0    0.0     0.0    0.0
+  helper                                          Options.Applicative.Extra            Options/Applicative/Extra.hs:(49,1)-(53,12)               3230          0    0.0    0.0     0.0    0.0
+   long                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   3231          1    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3232          1    0.0    0.0     0.0    0.0
+ CAF:helper6                                      Options.Applicative.Extra            <no location info>                                        2328          0    0.0    0.0     0.0    0.0
+  helper                                          Options.Applicative.Extra            Options/Applicative/Extra.hs:(49,1)-(53,12)               3236          0    0.0    0.0     0.0    0.0
+   help                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:183:1-55                   3237          1    0.0    0.0     0.0    0.0
+ CAF:helper7                                      Options.Applicative.Extra            <no location info>                                        2327          0    0.0    0.0     0.0    0.0
+  helper                                          Options.Applicative.Extra            Options/Applicative/Extra.hs:(49,1)-(53,12)               3238          0    0.0    0.0     0.0    0.0
+   help                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:183:1-55                   3239          0    0.0    0.0     0.0    0.0
+    optionMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          3240          0    0.0    0.0     0.0    0.0
+ CAF:hidden                                       Options.Applicative.Builder          Options/Applicative/Builder.hs:203:1-6                    2401          0    0.0    0.0     0.0    0.0
+  hidden                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:(203,1)-(204,54)           3241          1    0.0    0.0     0.0    0.0
+   optionMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          3242          0    0.0    0.0     0.0    0.0
+ CAF:internal                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:183:1-8           2363          0    0.0    0.0     0.0    0.0
+  internal                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:183:1-60          2604          1    0.0    0.0     0.0    0.0
+   optionMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          2606          0    0.0    0.0     0.0    0.0
+ CAF:liftOpt                                      Options.Applicative.Common           Options/Applicative/Common.hs:80:1-7                      2354          0    0.0    0.0     0.0    0.0
+  liftOpt                                         Options.Applicative.Common           Options/Applicative/Common.hs:80:1-14                     2612          1    0.0    0.0     0.0    0.0
+ CAF:lvl136_rKGV                                  Options.Applicative.BashCompletion   <no location info>                                        2116          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2600          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2601          0    0.0    0.0     0.0    0.0
+    long                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2602          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2603          1    0.0    0.0     0.0    0.0
+ CAF:lvl139_rKGY                                  Options.Applicative.BashCompletion   <no location info>                                        2118          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2597          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2598          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2607          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2608          1    0.0    0.0     0.0    0.0
+    flag'                                         Options.Applicative.Builder          Options/Applicative/Builder.hs:(317,1)-(321,43)           2610          1    0.0    0.0     0.0    0.0
+     flag'.rdr                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:(319,5)-(321,43)           2626          1    0.0    0.0     0.0    0.0
+      flag'.rdr.fields                            Options.Applicative.Builder          Options/Applicative/Builder.hs:319:15-45                  2628          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2629          0    0.0    0.0     0.0    0.0
+        fieldMod                                  Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2631          0    0.0    0.0     0.0    0.0
+         name                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:57:3-61           2632          1    0.0    0.0     0.0    0.0
+          flagNames                               Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:40:5-13           2645          1    0.0    0.0     0.0    0.0
+      flagActive                                  Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:41:5-14           2627          1    0.0    0.0     0.0    0.0
+      flagNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:40:5-13           2643          1    0.0    0.0     0.0    0.0
+     mkParser                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2611          1    0.0    0.0     0.0    0.0
+      mkParser.opt                                Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2622          1    0.0    0.0     0.0    0.0
+       mkOption                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2623          1    0.0    0.0     0.0    0.0
+ CAF:lvl143_rKH5                                  Options.Applicative.BashCompletion   <no location info>                                        2122          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2700          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2701          0    0.0    0.0     0.0    0.0
+    long                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2702          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2703          1    0.0    0.0     0.0    0.0
+ CAF:lvl144_rKH6                                  Options.Applicative.BashCompletion   <no location info>                                        2123          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2698          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2699          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2704          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2710          1    0.0    0.0     0.0    0.0
+ CAF:lvl149_rKHb                                  Options.Applicative.BashCompletion   <no location info>                                        2124          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2696          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2697          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2706          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2709          1    0.0    0.0     0.0    0.0
+    value                                         Options.Applicative.Builder          Options/Applicative/Builder.hs:171:1-50                   2705          1    0.0    0.0     0.0    0.0
+ CAF:lvl150_rKHc                                  Options.Applicative.BashCompletion   <no location info>                                        2125          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2687          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2688          0    0.0    0.0     0.0    0.0
+    option                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2689          1    0.0    0.0     0.0    0.0
+     mkParser                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2711          1    0.0    0.0     0.0    0.0
+      mkParser.opt                                Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2712          1    0.0    0.0     0.0    0.0
+       mkOption                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2713          1    0.0    0.0     0.0    0.0
+     option.(...)                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2691          1    0.0    0.0     0.0    0.0
+      <>                                          Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2707          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2708          1    0.0    0.0     0.0    0.0
+     option.d                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2690          1    0.0    0.0     0.0    0.0
+     option.fields                                Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   2716          1    0.0    0.0     0.0    0.0
+      option.f                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2717          1    0.0    0.0     0.0    0.0
+       option.(...)                               Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2718          0    0.0    0.0     0.0    0.0
+        <>                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2719          0    0.0    0.0     0.0    0.0
+     option.rdr                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   2714          1    0.0    0.0     0.0    0.0
+      optNames                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2715          1    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2720          0    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2722          0    0.0    0.0     0.0    0.0
+      name                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           2723          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2724          1    0.0    0.0     0.0    0.0
+ CAF:lvl151_rKHd                                  Options.Applicative.BashCompletion   <no location info>                                        2126          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2595          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2596          0    0.0    0.0     0.0    0.0
+ CAF:lvl154_rKHj                                  Options.Applicative.BashCompletion   <no location info>                                        2129          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2740          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2741          0    0.0    0.0     0.0    0.0
+    long                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2742          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2743          1    0.0    0.0     0.0    0.0
+ CAF:lvl155_rKHk                                  Options.Applicative.BashCompletion   <no location info>                                        2130          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2738          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2739          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2744          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2750          1    0.0    0.0     0.0    0.0
+ CAF:lvl156_rKHl                                  Options.Applicative.BashCompletion   <no location info>                                        2131          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2736          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2737          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2746          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2749          1    0.0    0.0     0.0    0.0
+    value                                         Options.Applicative.Builder          Options/Applicative/Builder.hs:171:1-50                   2745          1    0.0    0.0     0.0    0.0
+ CAF:lvl157_rKHm                                  Options.Applicative.BashCompletion   <no location info>                                        2132          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2731          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2732          0    0.0    0.0     0.0    0.0
+    option                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2733          1    0.0    0.0     0.0    0.0
+     mkParser                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2751          1    0.0    0.0     0.0    0.0
+      mkParser.opt                                Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2752          1    0.0    0.0     0.0    0.0
+       mkOption                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2753          1    0.0    0.0     0.0    0.0
+     option.(...)                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2735          1    0.0    0.0     0.0    0.0
+      <>                                          Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2747          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2748          1    0.0    0.0     0.0    0.0
+     option.d                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2734          1    0.0    0.0     0.0    0.0
+     option.fields                                Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   2756          1    0.0    0.0     0.0    0.0
+      option.f                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2757          1    0.0    0.0     0.0    0.0
+       option.(...)                               Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2758          0    0.0    0.0     0.0    0.0
+        <>                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2759          0    0.0    0.0     0.0    0.0
+     option.rdr                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   2754          1    0.0    0.0     0.0    0.0
+      optNames                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2755          1    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2760          0    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2762          0    0.0    0.0     0.0    0.0
+      name                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           2763          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2764          1    0.0    0.0     0.0    0.0
+ CAF:lvl158_rKHn                                  Options.Applicative.BashCompletion   <no location info>                                        2133          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2593          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2594          0    0.0    0.0     0.0    0.0
+ CAF:lvl159_rKHo                                  Options.Applicative.BashCompletion   <no location info>                                        2134          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2765          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2766          0    0.0    0.0     0.0    0.0
+ CAF:lvl160_rKHp                                  Options.Applicative.BashCompletion   <no location info>                                        2135          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2585          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2586          0    0.0    0.0     0.0    0.0
+ CAF:lvl164_rKHw                                  Options.Applicative.BashCompletion   <no location info>                                        2138          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2791          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2792          0    0.0    0.0     0.0    0.0
+    long                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2793          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2794          1    0.0    0.0     0.0    0.0
+ CAF:lvl165_rKHx                                  Options.Applicative.BashCompletion   <no location info>                                        2139          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2789          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2790          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2795          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2798          1    0.0    0.0     0.0    0.0
+ CAF:lvl166_rKHz                                  Options.Applicative.BashCompletion   <no location info>                                        2141          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2771          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2772          0    0.0    0.0     0.0    0.0
+    many                                          Options.Applicative.Types            Options/Applicative/Types.hs:275:3-26                     2773          0    0.0    0.0     0.0    0.0
+     fromM                                        Options.Applicative.Types            Options/Applicative/Types.hs:257:1-26                     2774          0    0.0    0.0     0.0    0.0
+      manyM                                       Options.Applicative.Types            Options/Applicative/Types.hs:(263,1)-(267,30)             2775          1    0.0    0.0     0.0    0.0
+       fmap                                       Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             2782          3    0.0    0.0     0.0    0.0
+        fmap                                      Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     2800          1    0.0    0.0     0.0    0.0
+         fmap                                     Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             2803          1    0.0    0.0     0.0    0.0
+       >>=                                        Options.Applicative.Types            Options/Applicative/Types.hs:247:3-64                     2776          1    0.0    0.0     0.0    0.0
+       oneM                                       Options.Applicative.Types            Options/Applicative/Types.hs:260:1-26                     2780          1    0.0    0.0     0.0    0.0
+ CAF:lvl167_rKHA                                  Options.Applicative.BashCompletion   <no location info>                                        2142          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2767          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2768          0    0.0    0.0     0.0    0.0
+    many                                          Options.Applicative.Types            Options/Applicative/Types.hs:275:3-26                     2769          1    0.0    0.0     0.0    0.0
+     fromM                                        Options.Applicative.Types            Options/Applicative/Types.hs:257:1-26                     2770          1    0.0    0.0     0.0    0.0
+      manyM                                       Options.Applicative.Types            Options/Applicative/Types.hs:(263,1)-(267,30)             2777          0    0.0    0.0     0.0    0.0
+       >>=                                        Options.Applicative.Types            Options/Applicative/Types.hs:247:3-64                     2778          0    0.0    0.0     0.0    0.0
+        >>=.\                                     Options.Applicative.Types            Options/Applicative/Types.hs:247:37-64                    2779          1    0.0    0.0     0.0    0.0
+         >>=.\.\                                  Options.Applicative.Types            Options/Applicative/Types.hs:247:46-63                    2826          0    0.0    0.0     0.0    0.0
+          pure                                    Options.Applicative.Types            Options/Applicative/Types.hs:253:3-30                     2833          0    0.0    0.0     0.0    0.0
+           pure.\                                 Options.Applicative.Types            Options/Applicative/Types.hs:253:28-30                    2834          1    0.0    0.0     0.0    0.0
+       oneM                                       Options.Applicative.Types            Options/Applicative/Types.hs:260:1-26                     2781          0    0.0    0.0     0.0    0.0
+ CAF:lvl170_rKHG                                  Options.Applicative.BashCompletion   <no location info>                                        2145          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2842          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2843          0    0.0    0.0     0.0    0.0
+    long                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2844          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2845          1    0.0    0.0     0.0    0.0
+ CAF:lvl171_rKHH                                  Options.Applicative.BashCompletion   <no location info>                                        2146          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2840          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2841          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2846          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2849          1    0.0    0.0     0.0    0.0
+ CAF:lvl172_rKHI                                  Options.Applicative.BashCompletion   <no location info>                                        2147          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2835          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2836          0    0.0    0.0     0.0    0.0
+    option                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2837          1    0.0    0.0     0.0    0.0
+     mkParser                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2850          1    0.0    0.0     0.0    0.0
+      mkParser.opt                                Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2851          1    0.0    0.0     0.0    0.0
+       mkOption                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2852          1    0.0    0.0     0.0    0.0
+     option.(...)                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2839          1    0.0    0.0     0.0    0.0
+      <>                                          Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2847          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2848          1    0.0    0.0     0.0    0.0
+     option.d                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2838          1    0.0    0.0     0.0    0.0
+     option.fields                                Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   2855          1    0.0    0.0     0.0    0.0
+      option.f                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2856          1    0.0    0.0     0.0    0.0
+       option.(...)                               Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2857          0    0.0    0.0     0.0    0.0
+        <>                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2858          0    0.0    0.0     0.0    0.0
+     option.rdr                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   2853          1    0.0    0.0     0.0    0.0
+      optNames                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2854          1    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2859          0    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2861          0    0.0    0.0     0.0    0.0
+      name                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           2862          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2863          1    0.0    0.0     0.0    0.0
+ CAF:lvl175_rKHO                                  Options.Applicative.BashCompletion   <no location info>                                        2150          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2874          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2875          0    0.0    0.0     0.0    0.0
+    long                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2876          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2877          1    0.0    0.0     0.0    0.0
+ CAF:lvl176_rKHP                                  Options.Applicative.BashCompletion   <no location info>                                        2151          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2872          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2873          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2878          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2881          1    0.0    0.0     0.0    0.0
+ CAF:lvl177_rKHQ                                  Options.Applicative.BashCompletion   <no location info>                                        2152          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2866          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2867          0    0.0    0.0     0.0    0.0
+    fmap                                          Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             2883          6    0.0    0.0     0.0    0.0
+     fmap                                         Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     2884          2    0.0    0.0     0.0    0.0
+      fmap                                        Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             2887          2    0.0    0.0     0.0    0.0
+    strOption                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:350:1-22                   2868          1    0.0    0.0     0.0    0.0
+     option                                       Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2869          1    0.0    0.0     0.0    0.0
+      mkParser                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2882          1    0.0    0.0     0.0    0.0
+       mkParser.opt                               Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2885          1    0.0    0.0     0.0    0.0
+        mkOption                                  Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2886          1    0.0    0.0     0.0    0.0
+      option.(...)                                Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2871          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2879          1    0.0    0.0     0.0    0.0
+        <>                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2880          1    0.0    0.0     0.0    0.0
+      option.d                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2870          1    0.0    0.0     0.0    0.0
+      option.fields                               Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   2890          1    0.0    0.0     0.0    0.0
+       option.f                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2891          1    0.0    0.0     0.0    0.0
+        option.(...)                              Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2892          0    0.0    0.0     0.0    0.0
+         <>                                       Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2893          0    0.0    0.0     0.0    0.0
+      option.rdr                                  Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   2888          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2889          1    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2894          0    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2896          0    0.0    0.0     0.0    0.0
+      name                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           2897          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2898          1    0.0    0.0     0.0    0.0
+ CAF:lvl180_rKHW                                  Options.Applicative.BashCompletion   <no location info>                                        2155          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2909          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2910          0    0.0    0.0     0.0    0.0
+    long                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2911          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2912          1    0.0    0.0     0.0    0.0
+ CAF:lvl181_rKHX                                  Options.Applicative.BashCompletion   <no location info>                                        2156          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2907          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2908          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2913          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2916          1    0.0    0.0     0.0    0.0
+ CAF:lvl182_rKHY                                  Options.Applicative.BashCompletion   <no location info>                                        2157          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2901          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2902          0    0.0    0.0     0.0    0.0
+    fmap                                          Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             2918          6    0.0    0.0     0.0    0.0
+     fmap                                         Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     2919          2    0.0    0.0     0.0    0.0
+      fmap                                        Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             2922          2    0.0    0.0     0.0    0.0
+    strOption                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:350:1-22                   2903          1    0.0    0.0     0.0    0.0
+     option                                       Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2904          1    0.0    0.0     0.0    0.0
+      mkParser                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2917          1    0.0    0.0     0.0    0.0
+       mkParser.opt                               Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2920          1    0.0    0.0     0.0    0.0
+        mkOption                                  Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2921          1    0.0    0.0     0.0    0.0
+      option.(...)                                Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2906          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2914          1    0.0    0.0     0.0    0.0
+        <>                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2915          1    0.0    0.0     0.0    0.0
+      option.d                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2905          1    0.0    0.0     0.0    0.0
+      option.fields                               Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   2925          1    0.0    0.0     0.0    0.0
+       option.f                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2926          1    0.0    0.0     0.0    0.0
+        option.(...)                              Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2927          0    0.0    0.0     0.0    0.0
+         <>                                       Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2928          0    0.0    0.0     0.0    0.0
+      option.rdr                                  Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   2923          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2924          1    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2929          0    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2931          0    0.0    0.0     0.0    0.0
+      name                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           2932          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2933          1    0.0    0.0     0.0    0.0
+ CAF:lvl185_rKI4                                  Options.Applicative.BashCompletion   <no location info>                                        2160          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2944          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2945          0    0.0    0.0     0.0    0.0
+    long                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2946          1    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2947          1    0.0    0.0     0.0    0.0
+ CAF:lvl186_rKI5                                  Options.Applicative.BashCompletion   <no location info>                                        2161          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2942          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2943          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2948          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2951          1    0.0    0.0     0.0    0.0
+ CAF:lvl187_rKI6                                  Options.Applicative.BashCompletion   <no location info>                                        2162          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2936          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2937          0    0.0    0.0     0.0    0.0
+    fmap                                          Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             2953          6    0.0    0.0     0.0    0.0
+     fmap                                         Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     2954          2    0.0    0.0     0.0    0.0
+      fmap                                        Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             2957          2    0.0    0.0     0.0    0.0
+    strOption                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:350:1-22                   2938          1    0.0    0.0     0.0    0.0
+     option                                       Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2939          1    0.0    0.0     0.0    0.0
+      mkParser                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2952          1    0.0    0.0     0.0    0.0
+       mkParser.opt                               Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2955          1    0.0    0.0     0.0    0.0
+        mkOption                                  Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2956          1    0.0    0.0     0.0    0.0
+      option.(...)                                Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2941          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2949          1    0.0    0.0     0.0    0.0
+        <>                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2950          1    0.0    0.0     0.0    0.0
+      option.d                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2940          1    0.0    0.0     0.0    0.0
+      option.fields                               Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   2960          1    0.0    0.0     0.0    0.0
+       option.f                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2961          1    0.0    0.0     0.0    0.0
+        option.(...)                              Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2962          0    0.0    0.0     0.0    0.0
+         <>                                       Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2963          0    0.0    0.0     0.0    0.0
+      option.rdr                                  Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   2958          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2959          1    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2964          0    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2966          0    0.0    0.0     0.0    0.0
+      name                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           2967          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2968          1    0.0    0.0     0.0    0.0
+ CAF:lvl188_rKI7                                  Options.Applicative.BashCompletion   <no location info>                                        2163          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2934          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2935          0    0.0    0.0     0.0    0.0
+ CAF:lvl189_rKI8                                  Options.Applicative.BashCompletion   <no location info>                                        2164          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2899          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2900          0    0.0    0.0     0.0    0.0
+ CAF:lvl190_rKI9                                  Options.Applicative.BashCompletion   <no location info>                                        2165          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2864          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2865          0    0.0    0.0     0.0    0.0
+ CAF:lvl25_rdjs                                   Options.Applicative.Types            <no location info>                                        2261          0    0.0    0.0     0.0    0.0
+  manyM                                           Options.Applicative.Types            Options/Applicative/Types.hs:(263,1)-(267,30)             2827          0    0.0    0.0     0.0    0.0
+   >>=                                            Options.Applicative.Types            Options/Applicative/Types.hs:247:3-64                     2828          0    0.0    0.0     0.0    0.0
+    >>=.\                                         Options.Applicative.Types            Options/Applicative/Types.hs:247:37-64                    2829          0    0.0    0.0     0.0    0.0
+     >>=.\.\                                      Options.Applicative.Types            Options/Applicative/Types.hs:247:46-63                    2830          0    0.0    0.0     0.0    0.0
+      pure                                        Options.Applicative.Types            Options/Applicative/Types.hs:253:3-30                     2832          1    0.0    0.0     0.0    0.0
+ CAF:lvl26_rdjt                                   Options.Applicative.Types            <no location info>                                        2266          0    0.0    0.0     0.0    0.0
+  manyM                                           Options.Applicative.Types            Options/Applicative/Types.hs:(263,1)-(267,30)             2815          0    0.0    0.0     0.0    0.0
+ CAF:lvl5_ruJ0                                    Options.Applicative.Common           <no location info>                                        2356          0    0.0    0.0     0.0    0.0
+ CAF:lvl7_r4Tb                                    Math.Combinatorics.Exact.Primes      <no location info>                                        1386          0    0.0    0.0     0.0    0.0
+  primes                                          Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(39,1)-(61,56)     3386          0    0.0    0.0     0.0    0.0
+   primes.wheels                                  Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(43,5)-(49,46)     3387          0    0.0    0.0     0.0    0.0
+    primes.wheels.nextSize                        Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(45,9)-(49,46)     3388          2    0.0    0.0     0.0    0.0
+ CAF:lvl8_r4Tc                                    Math.Combinatorics.Exact.Primes      <no location info>                                        1387          0    0.0    0.0     0.0    0.0
+  primes                                          Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(39,1)-(61,56)     3391          0    0.0    0.0     0.0    0.0
+   primes.primeSquares                            Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:41:5-38            3392          0    0.0    0.0     0.0    0.0
+ CAF:main1                                        Main                                 <no location info>                                        2478          0    0.0    0.0     0.0    0.0
+  main                                            Main                                 app/Main.hs:(34,1)-(39,59)                                2480          1    0.0    0.0     0.0    0.0
+ CAF:main2                                        Main                                 <no location info>                                        2471          0    0.0    0.0     0.0    0.0
+  runLoss                                         Main                                 app/Main.hs:54:1-58                                       3280          0    0.0    0.0     0.0    0.0
+   expectedLoss                                   Examples                             src/Examples.hs:(237,1)-(238,48)                          3369          0    0.0    0.0     0.0    0.0
+    probLoss                                      Examples                             src/Examples.hs:231:1-63                                  3397          0    0.0    0.0     0.0    0.0
+     individualLoss                               Examples                             src/Examples.hs:(226,1)-(228,49)                          3398          0    0.0    0.0     0.0    0.0
+ CAF:main3                                        Main                                 <no location info>                                        2477          0    0.0    0.0     0.0    0.0
+  main                                            Main                                 app/Main.hs:(34,1)-(39,59)                                2521          0    0.0    0.0     0.0    0.0
+   main.opts                                      Main                                 app/Main.hs:(37,11)-(39,59)                               2522          0    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder          Options/Applicative/Builder.hs:381:3-56                   2525          1    0.0    0.0     0.0    0.0
+     applyInfoMod                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:374:5-16                   2526          2    0.0    0.0     0.0    0.0
+     fullDesc                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:385:1-52                   2528          0    0.0    0.0     0.0    0.0
+      fullDesc.\                                  Options.Applicative.Builder          Options/Applicative/Builder.hs:385:28-52                  2529          1    0.0    0.0     0.0    0.0
+    info                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:(441,1)-(450,34)           2523          1    0.0    0.0     0.0    0.0
+     applyInfoMod                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:374:5-16                   2524          1    0.0    0.0     0.0    0.0
+    progDesc                                      Options.Applicative.Builder          Options/Applicative/Builder.hs:411:1-61                   2534          1    0.0    0.0     0.0    0.0
+     progDesc.\                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:411:30-61                  2535          1    0.0    0.0     0.0    0.0
+ CAF:main5                                        Main                                 <no location info>                                        2476          0    0.0    0.0     0.0    0.0
+  main                                            Main                                 app/Main.hs:(34,1)-(39,59)                                2530          0    0.0    0.0     0.0    0.0
+   main.opts                                      Main                                 app/Main.hs:(37,11)-(39,59)                               2531          0    0.0    0.0     0.0    0.0
+    info                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:(441,1)-(450,34)           2532          0    0.0    0.0     0.0    0.0
+     info.base                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:(443,5)-(450,34)           2533          1    0.0    0.0     0.0    0.0
+ CAF:main7                                        Main                                 <no location info>                                        2472          0    0.0    0.0     0.0    0.0
+  main                                            Main                                 app/Main.hs:(34,1)-(39,59)                                2972          0    0.0    0.0     0.0    0.0
+   main.opts                                      Main                                 app/Main.hs:(37,11)-(39,59)                               2973          0    0.0    0.0     0.0    0.0
+    fmap                                          Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             2974          3    0.0    0.0     0.0    0.0
+     fmap                                         Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     2995          1    0.0    0.0     0.0    0.0
+      fmap                                        Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             2999          1    0.0    0.0     0.0    0.0
+       fmap                                       Options.Applicative.Types            Options/Applicative/Types.hs:204:3-45                     3041          1    0.0    0.0     0.0    0.0
+        fmap                                      Options.Applicative.Types            Options/Applicative/Types.hs:165:3-37                     3051          1    0.0    0.0     0.0    0.0
+ CAF:main_parser                                  Main                                 <no location info>                                        2473          0    0.0    0.0     0.0    0.0
+  main                                            Main                                 app/Main.hs:(34,1)-(39,59)                                2970          0    0.0    0.0     0.0    0.0
+   main.opts                                      Main                                 app/Main.hs:(37,11)-(39,59)                               2971          0    0.0    0.0     0.0    0.0
+ CAF:option2                                      Options.Applicative.Builder          <no location info>                                        2395          0    0.0    0.0     0.0    0.0
+  option                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2692          0    0.0    0.0     0.0    0.0
+   option.(...)                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2693          0    0.0    0.0     0.0    0.0
+    metavar                                       Options.Applicative.Builder          Options/Applicative/Builder.hs:199:1-55                   2694          1    0.0    0.0     0.0    0.0
+     optionMod                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          2695          0    0.0    0.0     0.0    0.0
+ CAF:optionMod                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-9           2362          0    0.0    0.0     0.0    0.0
+  optionMod                                       Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          2605          1    0.0    0.0     0.0    0.0
+ CAF:options                                      Main                                 app/Main.hs:16:1-7                                        2470          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 2975          1    0.0    0.0     0.0    0.0
+ CAF:options1                                     Main                                 <no location info>                                        2469          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 3127          0    0.0    0.0     0.0    0.0
+   option                                         Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           3128          1    0.0    0.0     0.0    0.0
+    mkParser                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  3144          1    0.0    0.0     0.0    0.0
+     mkParser.opt                                 Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          3153          1    0.0    0.0     0.0    0.0
+      mkOption                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          3154          1    0.0    0.0     0.0    0.0
+    option.(...)                                  Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   3130          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3141          1    0.0    0.0     0.0    0.0
+      <>                                          Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    3142          1    0.0    0.0     0.0    0.0
+    option.crdr                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:369:5-42                   3184          1    0.0    0.0     0.0    0.0
+    option.d                                      Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   3129          1    0.0    0.0     0.0    0.0
+    option.fields                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   3157          1    0.0    0.0     0.0    0.0
+     option.f                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   3158          1    0.0    0.0     0.0    0.0
+      option.(...)                                Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   3159          0    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3160          0    0.0    0.0     0.0    0.0
+    option.rdr                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   3155          1    0.0    0.0     0.0    0.0
+     optNames                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           3156          1    0.0    0.0     0.0    0.0
+   <>                                             Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3161          0    0.0    0.0     0.0    0.0
+   long                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   3173          0    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3174          0    0.0    0.0     0.0    0.0
+     name                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           3175          1    0.0    0.0     0.0    0.0
+   short                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:155:1-34                   3166          0    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3167          0    0.0    0.0     0.0    0.0
+     name                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           3168          1    0.0    0.0     0.0    0.0
+ CAF:options11                                    Main                                 <no location info>                                        2467          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 3169          0    0.0    0.0     0.0    0.0
+   long                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   3170          0    0.0    0.0     0.0    0.0
+ CAF:options14                                    Main                                 <no location info>                                        2450          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 3059          0    0.0    0.0     0.0    0.0
+   auto                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:(119,1)-(121,58)           3060          1    0.0    0.0     0.0    0.0
+    eitherReader                                  Options.Applicative.Builder          Options/Applicative/Builder.hs:139:1-60                   3061          1    0.0    0.0     0.0    0.0
+     >>=                                          Options.Applicative.Types            Options/Applicative/Types.hs:177:3-43                     3062          1    0.0    0.0     0.0    0.0
+ CAF:options15                                    Main                                 <no location info>                                        2460          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 2976          0    0.0    0.0     0.0    0.0
+   fmap                                           Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             2994          2    0.0    0.0     0.0    0.0
+    fmap                                          Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     2996          1    0.0    0.0     0.0    0.0
+     fmap                                         Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             3000          1    0.0    0.0     0.0    0.0
+      fmap                                        Options.Applicative.Types            Options/Applicative/Types.hs:204:3-45                     3042          1    0.0    0.0     0.0    0.0
+       fmap                                       Options.Applicative.Types            Options/Applicative/Types.hs:165:3-37                     3057          1    0.0    0.0     0.0    0.0
+   option                                         Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2977          1    0.0    0.0     0.0    0.0
+    mkParser                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2993          1    0.0    0.0     0.0    0.0
+     mkParser.opt                                 Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2997          1    0.0    0.0     0.0    0.0
+      mkOption                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2998          1    0.0    0.0     0.0    0.0
+    option.(...)                                  Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2979          1    0.0    0.0     0.0    0.0
+     <>                                           Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2990          1    0.0    0.0     0.0    0.0
+      <>                                          Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2991          1    0.0    0.0     0.0    0.0
+    option.crdr                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:369:5-42                   3043          1    0.0    0.0     0.0    0.0
+    option.d                                      Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2978          1    0.0    0.0     0.0    0.0
+    option.fields                                 Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   3003          1    0.0    0.0     0.0    0.0
+     option.f                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   3004          1    0.0    0.0     0.0    0.0
+      option.(...)                                Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   3005          0    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3006          0    0.0    0.0     0.0    0.0
+    option.rdr                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   3001          1    0.0    0.0     0.0    0.0
+     optNames                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           3002          1    0.0    0.0     0.0    0.0
+   <>                                             Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3007          0    0.0    0.0     0.0    0.0
+   long                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   3019          0    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3020          0    0.0    0.0     0.0    0.0
+     name                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           3021          1    0.0    0.0     0.0    0.0
+   short                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:155:1-34                   3012          0    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3013          0    0.0    0.0     0.0    0.0
+     name                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           3014          1    0.0    0.0     0.0    0.0
+ CAF:options16                                    Main                                 <no location info>                                        2459          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 2980          0    0.0    0.0     0.0    0.0
+   <>                                             Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2989          3    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2992          3    0.0    0.0     0.0    0.0
+   help                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:183:1-55                   2987          1    0.0    0.0     0.0    0.0
+    optionMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          2988          0    0.0    0.0     0.0    0.0
+   long                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   2981          1    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2982          1    0.0    0.0     0.0    0.0
+   metavar                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:199:1-55                   2985          1    0.0    0.0     0.0    0.0
+    optionMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          2986          0    0.0    0.0     0.0    0.0
+   short                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:155:1-34                   2983          1    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2984          1    0.0    0.0     0.0    0.0
+ CAF:options2                                     Main                                 <no location info>                                        2468          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 3131          0    0.0    0.0     0.0    0.0
+   <>                                             Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  3140          3    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    3143          3    0.0    0.0     0.0    0.0
+   help                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:183:1-55                   3138          1    0.0    0.0     0.0    0.0
+    optionMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          3139          0    0.0    0.0     0.0    0.0
+   long                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   3132          1    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3133          1    0.0    0.0     0.0    0.0
+   metavar                                        Options.Applicative.Builder          Options/Applicative/Builder.hs:199:1-55                   3136          1    0.0    0.0     0.0    0.0
+    optionMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:129:1-25          3137          0    0.0    0.0     0.0    0.0
+   short                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:155:1-34                   3134          1    0.0    0.0     0.0    0.0
+    fieldMod                                      Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          3135          1    0.0    0.0     0.0    0.0
+ CAF:options20                                    Main                                 <no location info>                                        2457          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 3008          0    0.0    0.0     0.0    0.0
+   short                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:155:1-34                   3009          0    0.0    0.0     0.0    0.0
+ CAF:options23                                    Main                                 <no location info>                                        2458          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 3015          0    0.0    0.0     0.0    0.0
+   long                                           Options.Applicative.Builder          Options/Applicative/Builder.hs:159:1-32                   3016          0    0.0    0.0     0.0    0.0
+ CAF:options8                                     Main                                 <no location info>                                        2466          0    0.0    0.0     0.0    0.0
+  options                                         Main                                 app/Main.hs:(16,1)-(27,9)                                 3162          0    0.0    0.0     0.0    0.0
+   short                                          Options.Applicative.Builder          Options/Applicative/Builder.hs:155:1-34                   3163          0    0.0    0.0     0.0    0.0
+ CAF:p_rKHy                                       Options.Applicative.BashCompletion   <no location info>                                        2140          0    0.0    0.0     0.0    0.0
+  bashCompletionParser                            Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2783          0    0.0    0.0     0.0    0.0
+   bashCompletionParser.complParser               Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2784          0    0.0    0.0     0.0    0.0
+    strOption                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:350:1-22                   2785          1    0.0    0.0     0.0    0.0
+     option                                       Options.Applicative.Builder          Options/Applicative/Builder.hs:(365,1)-(370,65)           2786          1    0.0    0.0     0.0    0.0
+      mkParser                                    Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(163,1)-(165,26)  2799          1    0.0    0.0     0.0    0.0
+       mkParser.opt                               Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:165:5-26          2801          1    0.0    0.0     0.0    0.0
+        mkOption                                  Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:171:1-43          2802          1    0.0    0.0     0.0    0.0
+      option.(...)                                Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2788          1    0.0    0.0     0.0    0.0
+       <>                                         Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2796          1    0.0    0.0     0.0    0.0
+        <>                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(96,3)-(97,47)    2797          1    0.0    0.0     0.0    0.0
+      option.d                                    Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2787          1    0.0    0.0     0.0    0.0
+      option.fields                               Options.Applicative.Builder          Options/Applicative/Builder.hs:368:5-55                   2806          1    0.0    0.0     0.0    0.0
+       option.f                                   Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2807          1    0.0    0.0     0.0    0.0
+        option.(...)                              Options.Applicative.Builder          Options/Applicative/Builder.hs:367:5-41                   2808          0    0.0    0.0     0.0    0.0
+         <>                                       Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2809          0    0.0    0.0     0.0    0.0
+      option.rdr                                  Options.Applicative.Builder          Options/Applicative/Builder.hs:370:5-65                   2804          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2805          1    0.0    0.0     0.0    0.0
+    <>                                            Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:(140,3)-(141,40)  2810          0    0.0    0.0     0.0    0.0
+     fieldMod                                     Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:132:1-28          2812          0    0.0    0.0     0.0    0.0
+      name                                        Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:54:3-59           2813          1    0.0    0.0     0.0    0.0
+       optNames                                   Options.Applicative.Builder.Internal Options/Applicative/Builder/Internal.hs:35:5-12           2814          1    0.0    0.0     0.0    0.0
+ CAF:primes                                       Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:39:1-6             1388          0    0.0    0.0     0.0    0.0
+  primes                                          Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(39,1)-(61,56)     3381          1    0.0    0.0     0.0    0.0
+   primes.seive                                   Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(52,5)-(61,56)     3382          3    0.0    0.0     0.0    0.0
+    primes.seive.noFactorIn                       Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(60,9)-(61,56)     3389          4    0.0    0.0     0.0    0.0
+   primes.primeSquares                            Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:41:5-38            3390          1    0.0    0.0     0.0    0.0
+ CAF:readerAsk1                                   Options.Applicative.Types            <no location info>                                        2197          0    0.0    0.0     0.0    0.0
+  readerAsk                                       Options.Applicative.Types            Options/Applicative/Types.hs:189:1-21                     3066          1    0.0    0.0     0.0    0.0
+ CAF:wheels_r4Ta                                  Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:43:5-10            1385          0    0.0    0.0     0.0    0.0
+  primes                                          Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(39,1)-(61,56)     3383          0    0.0    0.0     0.0    0.0
+   primes.wheels                                  Math.Combinatorics.Exact.Primes      src/Math/Combinatorics/Exact/Primes.hs:(43,5)-(49,46)     3384          1    0.0    0.0     0.0    0.0
+ main                                             Main                                 app/Main.hs:(34,1)-(39,59)                                2481          0    0.0    0.0   100.0  100.0
+  main.opts                                       Main                                 app/Main.hs:(37,11)-(39,59)                               2520          1    0.0    0.0     0.0    0.0
+   fmap                                           Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             3052          0    0.0    0.0     0.0    0.0
+    fmap                                          Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     3053          0    0.0    0.0     0.0    0.0
+     fmap                                         Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             3054          0    0.0    0.0     0.0    0.0
+      fmap                                        Options.Applicative.Types            Options/Applicative/Types.hs:204:3-45                     3055          0    0.0    0.0     0.0    0.0
+       fmap                                       Options.Applicative.Types            Options/Applicative/Types.hs:165:3-37                     3056          0    0.0    0.0     0.0    0.0
+        options                                   Main                                 app/Main.hs:(16,1)-(27,9)                                 3058          0    0.0    0.0     0.0    0.0
+         auto                                     Options.Applicative.Builder          Options/Applicative/Builder.hs:(119,1)-(121,58)           3063          0    0.0    0.0     0.0    0.0
+          eitherReader                            Options.Applicative.Builder          Options/Applicative/Builder.hs:139:1-60                   3064          0    0.0    0.0     0.0    0.0
+           >>=                                    Options.Applicative.Types            Options/Applicative/Types.hs:177:3-43                     3065          0    0.0    0.0     0.0    0.0
+            auto.\                                Options.Applicative.Builder          Options/Applicative/Builder.hs:(119,31)-(121,58)          3068          1    0.0    0.0     0.0    0.0
+            unReadM                               Options.Applicative.Types            Options/Applicative/Types.hs:162:5-11                     3067          1    0.0    0.0     0.0    0.0
+  run                                             Main                                 app/Main.hs:30:1-49                                       3277          1    0.0    0.0   100.0  100.0
+   runLoss                                        Main                                 app/Main.hs:54:1-58                                       3279          1    0.0    0.0   100.0  100.0
+    expectedLoss                                  Examples                             src/Examples.hs:(237,1)-(238,48)                          3281          1    0.0    0.0    60.7   75.9
+     probLoss                                     Examples                             src/Examples.hs:231:1-63                                  3370       1716    0.0    0.0     0.0    0.1
+      individualLoss                              Examples                             src/Examples.hs:(226,1)-(228,49)                          3394       1716    0.0    0.0     0.0    0.1
+       individualLoss.f                           Examples                             src/Examples.hs:227:11-42                                 3399      12012    0.0    0.0     0.0    0.0
+       getFull                                    Examples                             src/Examples.hs:143:1-31                                  3395       1716    0.0    0.0     0.0    0.0
+        getBins                                   Examples                             src/Examples.hs:(129,1)-(131,28)                          3396      13728    0.0    0.0     0.0    0.0
+       individualLoss.ideal                       Examples                             src/Examples.hs:228:11-49                                 3400       1716    0.0    0.0     0.0    0.0
+        size                                      Examples                             src/Examples.hs:(123,1)-(125,27)                          3404      13728    0.0    0.0     0.0    0.0
+        divInt                                    Examples                             src/Examples.hs:199:1-46                                  3401       1716    0.0    0.0     0.0    0.0
+        getFull                                   Examples                             src/Examples.hs:143:1-31                                  3402       1716    0.0    0.0     0.0    0.0
+         getBins                                  Examples                             src/Examples.hs:(129,1)-(131,28)                          3403      13728    0.0    0.0     0.0    0.0
+      prob                                        Markov                               src/Markov.hs:52:26-29                                    3371       1716    0.0    0.0     0.0    0.0
+      state                                       Markov                               src/Markov.hs:53:26-30                                    3393       1716    0.0    0.0     0.0    0.0
+     chain                                        Markov                               src/Markov.hs:(45,5)-(46,41)                              3295          1    0.9    2.7    60.6   75.8
+      <>                                          Markov                               src/Markov.hs:(81,5)-(82,40)                              3367     643201    0.3    0.6     0.9    0.6
+       prob                                       Markov                               src/Markov.hs:52:26-29                                    3372    1286402    0.6    0.0     0.6    0.0
+       state                                      Markov                               src/Markov.hs:53:26-30                                    3368     214327    0.0    0.0     0.0    0.0
+      step                                        Markov                               src/Markov.hs:43:5-53                                     3300     244071    1.1    3.9    29.1   55.8
+       <*>                                        Markov                               src/Markov.hs:(70,5)-(71,51)                              3331     885556    1.6    0.6     7.2    9.9
+        prob                                      Markov                               src/Markov.hs:52:26-29                                    3373    1771112    0.0    0.0     0.0    0.0
+        state                                     Markov                               src/Markov.hs:53:26-30                                    3333    1771112    0.7    0.0     5.6    9.3
+         fmap                                     Markov                               src/Markov.hs:(61,5)-(62,44)                              3335          0    0.3    0.0     4.8    9.3
+          transition                              Examples                             src/Examples.hs:(97,5)-(106,35)                           3336          0    0.8    0.4     4.6    9.3
+           addItem                                Examples                             src/Examples.hs:(169,1)-(171,59)                          3338          0    0.4    0.0     1.9    4.4
+            iApply                                Examples                             src/Examples.hs:(162,1)-(165,46)                          3339    3396439    1.1    4.0     1.1    4.0
+            addItem.h                             Examples                             src/Examples.hs:(170,11)-(171,59)                         3344     885556    0.4    0.4     0.4    0.4
+           growLeft                               Examples                             src/Examples.hs:(176,1)-(178,60)                          3360          0    0.1    0.0     0.5    1.0
+            iApply                                Examples                             src/Examples.hs:(162,1)-(165,46)                          3361     675140    0.2    0.5     0.2    0.5
+            growLeft.h                            Examples                             src/Examples.hs:(177,11)-(178,60)                         3362     221435    0.2    0.5     0.2    0.5
+           growRight                              Examples                             src/Examples.hs:(181,1)-(186,40)                          3341          0    0.1    0.0     1.3    3.5
+            iApply                                Examples                             src/Examples.hs:(162,1)-(165,46)                          3342    2116835    0.5    1.8     0.5    1.8
+            growRight.h                           Examples                             src/Examples.hs:(182,11)-(183,61)                         3345     513005    0.4    1.1     0.7    1.7
+             growRight.shrink                     Examples                             src/Examples.hs:(184,11)-(186,40)                         3363     513005    0.3    0.6     0.3    0.6
+         transition                               Examples                             src/Examples.hs:(97,5)-(106,35)                           3366          0    0.0    0.0     0.0    0.0
+       extract                                    Markov                               src/Markov.hs:76:5-27                                     3301     244071    0.0    0.0     0.0    0.0
+       fmap                                       Markov                               src/Markov.hs:(61,5)-(62,44)                              3334     244071    0.3    0.2     0.3    0.2
+        prob                                      Markov                               src/Markov.hs:52:26-29                                    3374     244071    0.0    0.0     0.0    0.0
+        state                                     Markov                               src/Markov.hs:53:26-30                                    3343     244071    0.0    0.0     0.0    0.0
+       transition                                 Examples                             src/Examples.hs:(97,5)-(106,35)                           3302     244071    5.6    7.0    20.5   41.8
+        gapN                                      Examples                             src/Examples.hs:157:1-24                                  3320    3416994    1.2    0.2     1.8    1.4
+         getGap                                   Examples                             src/Examples.hs:(151,1)-(153,27)                          3321    1952568    0.6    1.2     0.6    1.2
+        transition.\                              Examples                             src/Examples.hs:98:38-43                                  3310    2993767    0.1    0.0     0.1    0.0
+        probAdd                                   Examples                             src/Examples.hs:203:1-40                                  3311    1708497    0.8    0.1     4.3    8.7
+         divInt                                   Examples                             src/Examples.hs:199:1-46                                  3315    1708497    0.0    0.0     0.0    0.0
+         openN                                    Examples                             src/Examples.hs:139:1-30                                  3312    1708497    0.8    0.0     1.9    3.6
+          getOpen                                 Examples                             src/Examples.hs:135:1-31                                  3313    1708497    0.6    2.4     1.1    3.6
+           getBins                                Examples                             src/Examples.hs:(129,1)-(131,28)                          3314    1708497    0.4    1.3     0.4    1.3
+         slots                                    Examples                             src/Examples.hs:190:1-37                                  3316     244071    0.3    0.2     1.6    5.0
+          getGap                                  Examples                             src/Examples.hs:(151,1)-(153,27)                          3317    1952568    0.4    1.2     0.4    1.2
+          getOpen                                 Examples                             src/Examples.hs:135:1-31                                  3318     244071    0.6    2.4     0.9    3.6
+           getBins                                Examples                             src/Examples.hs:(129,1)-(131,28)                          3319    1952568    0.4    1.3     0.4    1.3
+        probGrowL                                 Examples                             src/Examples.hs:(207,1)-(210,52)                          3346     642635    0.2    0.0     2.7    7.4
+         probGrowL.test                           Examples                             src/Examples.hs:210:11-52                                 3347     483980    0.2    0.0     1.6    4.6
+          fullN                                   Examples                             src/Examples.hs:147:1-30                                  3348     829680    0.3    0.0     1.4    4.6
+           getFull                                Examples                             src/Examples.hs:143:1-31                                  3349     633752    0.7    2.9     1.1    4.6
+            getBins                               Examples                             src/Examples.hs:(129,1)-(131,28)                          3350    2134796    0.4    1.6     0.4    1.6
+         divInt                                   Examples                             src/Examples.hs:199:1-46                                  3358     139726    0.0    0.0     0.0    0.0
+         slots                                    Examples                             src/Examples.hs:190:1-37                                  3354     139726    0.1    0.1     0.8    2.9
+          getGap                                  Examples                             src/Examples.hs:(151,1)-(153,27)                          3355    1117808    0.2    0.7     0.2    0.7
+          getOpen                                 Examples                             src/Examples.hs:135:1-31                                  3356     139726    0.3    1.3     0.5    2.1
+           getBins                                Examples                             src/Examples.hs:(129,1)-(131,28)                          3357    1117808    0.2    0.7     0.2    0.7
+        probGrowR                                 Examples                             src/Examples.hs:(214,1)-(217,58)                          3322     642635    0.3    0.0     3.6    9.3
+         probGrowR.test                           Examples                             src/Examples.hs:217:11-58                                 3323     483980    0.2    0.1     2.0    5.0
+          size                                    Examples                             src/Examples.hs:(123,1)-(125,27)                          3324    1826728    0.3    0.4     0.3    0.4
+          fullN                                   Examples                             src/Examples.hs:147:1-30                                  3351     829680    0.4    0.0     1.5    4.6
+           getFull                                Examples                             src/Examples.hs:143:1-31                                  3352     633752    0.7    2.9     1.1    4.6
+            getBins                               Examples                             src/Examples.hs:(129,1)-(131,28)                          3353    2134796    0.4    1.6     0.4    1.6
+         divInt                                   Examples                             src/Examples.hs:199:1-46                                  3329     208543    0.1    0.1     0.1    0.1
+         slots                                    Examples                             src/Examples.hs:190:1-37                                  3325     208543    0.2    0.1     1.2    4.3
+          getGap                                  Examples                             src/Examples.hs:(151,1)-(153,27)                          3326    1668344    0.4    1.0     0.4    1.0
+          getOpen                                 Examples                             src/Examples.hs:135:1-31                                  3327     208543    0.4    2.0     0.7    3.1
+           getBins                                Examples                             src/Examples.hs:(129,1)-(131,28)                          3328    1668344    0.2    1.1     0.2    1.1
+        growRight                                 Examples                             src/Examples.hs:(181,1)-(186,40)                          3340     513005    0.1    0.3     0.1    0.3
+        probId                                    Examples                             src/Examples.hs:(194,1)-(196,14)                          3303     244071    0.0    0.0     1.7    5.0
+         slots                                    Examples                             src/Examples.hs:190:1-37                                  3304     244071    0.4    0.2     1.7    5.0
+          getGap                                  Examples                             src/Examples.hs:(151,1)-(153,27)                          3305    1952568    0.4    1.2     0.4    1.2
+          getOpen                                 Examples                             src/Examples.hs:135:1-31                                  3306     244071    0.6    2.4     0.9    3.6
+           getBins                                Examples                             src/Examples.hs:(129,1)-(131,28)                          3307    1952568    0.3    1.3     0.3    1.3
+        transition.indices                        Examples                             src/Examples.hs:106:15-35                                 3308     244071    0.5    2.2     0.7    2.6
+         size                                     Examples                             src/Examples.hs:(123,1)-(125,27)                          3309    1952568    0.2    0.4     0.2    0.4
+        growLeft                                  Examples                             src/Examples.hs:(176,1)-(178,60)                          3359     221435    0.0    0.1     0.0    0.1
+      chain.gather                                Markov                               src/Markov.hs:46:15-41                                    3299          0    7.6   16.7    29.7   16.7
+       compare                                    Markov                               src/Markov.hs:59:5-49                                     3330   12683498    1.7    0.0    19.6    0.0
+        compare                                   Examples                             src/Examples.hs:92:56-58                                  3332   48333748   18.0    0.0    18.0    0.0
+       ==                                         Markov                               src/Markov.hs:57:5-41                                     3364     885549    0.2    0.0     2.4    0.0
+        ==                                        Examples                             src/Examples.hs:92:52-53                                  3365    6580972    2.2    0.0     2.2    0.0
+     expectedLoss.index                           Examples                             src/Examples.hs:238:11-48                                 3282          1    0.0    0.0     0.0    0.0
+      slots                                       Examples                             src/Examples.hs:190:1-37                                  3291          1    0.0    0.0     0.0    0.0
+       getGap                                     Examples                             src/Examples.hs:(151,1)-(153,27)                          3292          8    0.0    0.0     0.0    0.0
+       getOpen                                    Examples                             src/Examples.hs:135:1-31                                  3293          1    0.0    0.0     0.0    0.0
+        getBins                                   Examples                             src/Examples.hs:(129,1)-(131,28)                          3294          8    0.0    0.0     0.0    0.0
+      state                                       Markov                               src/Markov.hs:53:26-30                                    3283          1    0.0    0.0     0.0    0.0
+    initials                                      Main                                 app/Main.hs:45:1-78                                       3284          1    0.0    0.0     0.0    0.0
+     initials.\                                   Main                                 app/Main.hs:45:27-77                                      3288       3432    0.0    0.0     0.0    0.0
+      initial                                     Examples                             src/Examples.hs:119:1-40                                  3289       3432    0.0    0.0     0.0    0.0
+       fromLists                                  Examples                             src/Examples.hs:(111,1)-(115,26)                          3290      27456    0.0    0.0     0.0    0.0
+      choose                                      Math.Combinatorics.Exact.Binomial    src/Math/Combinatorics/Exact/Binomial.hs:(89,1)-(126,68)  3375          1    0.0    0.0     0.0    0.0
+       choose.\                                   Math.Combinatorics.Exact.Binomial    src/Math/Combinatorics/Exact/Binomial.hs:94:32-60         3376          6    0.0    0.0     0.0    0.0
+        choose.step                               Math.Combinatorics.Exact.Binomial    src/Math/Combinatorics/Exact/Binomial.hs:(111,5)-(126,68) 3377          6    0.0    0.0     0.0    0.0
+         choose.step.go                           Math.Combinatorics.Exact.Binomial    src/Math/Combinatorics/Exact/Binomial.hs:(121,9)-(126,68) 3385          9    0.0    0.0     0.0    0.0
+       choose.k                                   Math.Combinatorics.Exact.Binomial    src/Math/Combinatorics/Exact/Binomial.hs:107:5-66         3378          1    0.0    0.0     0.0    0.0
+       choose.nk                                  Math.Combinatorics.Exact.Binomial    src/Math/Combinatorics/Exact/Binomial.hs:108:5-17         3380          1    0.0    0.0     0.0    0.0
+       choose.sqrtN                               Math.Combinatorics.Exact.Binomial    src/Math/Combinatorics/Exact/Binomial.hs:109:5-64         3379          1    0.0    0.0     0.0    0.0
+    partitions                                    Main                                 app/Main.hs:(49,1)-(50,50)                                3285          1    1.6    0.0    39.3   24.1
+     partitions.\                                 Main                                 app/Main.hs:49:32-43                                      3287   16777216   33.9    0.0    33.9    0.0
+     partitions.grow                              Main                                 app/Main.hs:50:11-50                                      3286          8    3.8   24.0     3.8   24.0
+  execParser                                      Options.Applicative.Extra            Options/Applicative/Extra.hs:72:1-42                      2483          0    0.0    0.0     0.0    0.0
+   customExecParser                               Options.Applicative.Extra            Options/Applicative/Extra.hs:(76,1)-(78,23)               2484          1    0.0    0.0     0.0    0.0
+    execParserPure                                Options.Applicative.Extra            Options/Applicative/Extra.hs:(130,1)-(139,33)             2485          1    0.0    0.0     0.0    0.0
+     runP                                         Options.Applicative.Internal         Options/Applicative/Internal.hs:91:1-59                   2486          1    0.0    0.0     0.0    0.0
+      execParserPure.p                            Options.Applicative.Extra            Options/Applicative/Extra.hs:139:5-33                     2487          1    0.0    0.0     0.0    0.0
+       runParserInfo                              Options.Applicative.Common           Options/Applicative/Common.hs:229:1-62                    2488          1    0.0    0.0     0.0    0.0
+        infoParser                                Options.Applicative.Types            Options/Applicative/Types.hs:84:5-14                      2540          1    0.0    0.0     0.0    0.0
+        infoPolicy                                Options.Applicative.Types            Options/Applicative/Types.hs:91:5-14                      2518          1    0.0    0.0     0.0    0.0
+        runParserFully                            Options.Applicative.Common           Options/Applicative/Common.hs:(232,1)-(236,33)            2489          1    0.0    0.0     0.0    0.0
+         >>=                                      Options.Applicative.Internal         Options/Applicative/Internal.hs:64:3-50                   2490        133    0.0    0.0     0.0    0.0
+          >>=.\                                   Options.Applicative.Internal         Options/Applicative/Internal.hs:64:31-50                  2495        134    0.0    0.0     0.0    0.0
+           runParser                              Options.Applicative.Common           Options/Applicative/Common.hs:(205,1)-(223,24)            2496          2    0.0    0.0     0.0    0.0
+            runParser.do_step                     Options.Applicative.Common           Options/Applicative/Common.hs:(217,5)-(219,58)            2497          2    0.0    0.0     0.0    0.0
+             disamb                               Options.Applicative.Internal         Options/Applicative/Internal.hs:(258,1)-(265,18)          2499          2    0.0    0.0     0.0    0.0
+              pure                                Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3091          8    0.0    0.0     0.0    0.0
+              runListT                            Options.Applicative.Internal         Options/Applicative/Internal.hs:(183,1)-(187,43)          2500          4    0.0    0.0     0.0    0.0
+               stepListT                          Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2501          4    0.0    0.0     0.0    0.0
+               pure                               Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3209          2    0.0    0.0     0.0    0.0
+               takeListT                          Options.Applicative.Internal         Options/Applicative/Internal.hs:(179,1)-(180,75)          2514          0    0.0    0.0     0.0    0.0
+                bimapTStep                        Options.Applicative.Internal         Options/Applicative/Internal.hs:(172,1)-(173,46)          3207          1    0.0    0.0     0.0    0.0
+                pure                              Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3206          1    0.0    0.0     0.0    0.0
+                mzero                             Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  3095          0    0.0    0.0     0.0    0.0
+                 pure                             Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3208          1    0.0    0.0     0.0    0.0
+                stepParser                        Options.Applicative.Common           Options/Applicative/Common.hs:(191,1)-(198,28)            3101          0    0.0    0.0     0.0    0.0
+                 pure                             Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3114         15    0.0    0.0     0.0    0.0
+                 searchOpt                        Options.Applicative.Common           Options/Applicative/Common.hs:(174,1)-(179,20)            3102          0    0.0    0.0     0.0    0.0
+                  searchParser                    Options.Applicative.Common           Options/Applicative/Common.hs:(155,1)-(170,40)            3103          0    0.0    0.0     0.0    0.0
+                   <!>                            Options.Applicative.Internal         Options/Applicative/Internal.hs:(249,1)-(252,15)          3104          0    0.0    0.0     0.0    0.0
+                    >>=                           Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          3116          1    0.0    0.0     0.0    0.0
+                     stepListT                    Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  3118          3    0.0    0.0     0.0    0.0
+                     mplus                        Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          3119          2    0.0    0.0     0.0    0.0
+                      stepListT                   Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  3120          2    0.0    0.0     0.0    0.0
+                      >>=                         Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  3126          0    0.0    0.0     0.0    0.0
+                    lift                          Options.Applicative.Internal         Options/Applicative/Internal.hs:211:3-38                  3117          0    0.0    0.0     0.0    0.0
+                    mplus                         Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          3105          0    0.0    0.0     0.0    0.0
+                     stepListT                    Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  3115          1    0.0    0.0     0.0    0.0
+                     >>=                          Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  3106          0    0.0    0.0     0.0    0.0
+                      >>=                         Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          3107          0    0.0    0.0     0.0    0.0
+                    pure                          Options.Applicative.Internal         Options/Applicative/Internal.hs:195:3-25                  3121          0    0.0    0.0     0.0    0.0
+                     hoistList                    Options.Applicative.Internal         Options/Applicative/Internal.hs:176:1-62                  3122          0    0.0    0.0     0.0    0.0
+                      hoistList.\                 Options.Applicative.Internal         Options/Applicative/Internal.hs:176:29-55                 3123          0    0.0    0.0     0.0    0.0
+                   <|>                            Options.Applicative.Internal         Options/Applicative/Internal.hs:243:3-15                  3148          0    0.0    0.0     0.0    0.0
+                    mplus                         Options.Applicative.Internal         Options/Applicative/Internal.hs:239:3-57                  3149          0    0.0    0.0     0.0    0.0
+                     mplus                        Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          3150          0    0.0    0.0     0.0    0.0
+                      >>=                         Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  3151          0    0.0    0.0     0.0    0.0
+                       >>=                        Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          3152          0    0.0    0.0     0.0    0.0
+                   >>=                            Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  3108          0    0.0    0.0     0.0    0.0
+                    return                        Options.Applicative.Internal         Options/Applicative/Internal.hs:234:3-15                  3196          3    0.0    0.0     0.0    0.0
+                     pure                         Options.Applicative.Internal         Options/Applicative/Internal.hs:230:3-23                  3197          3    0.0    0.0     0.0    0.0
+                      pure                        Options.Applicative.Internal         Options/Applicative/Internal.hs:195:3-25                  3198          3    0.0    0.0     0.0    0.0
+                       hoistList                  Options.Applicative.Internal         Options/Applicative/Internal.hs:176:1-62                  3199          3    0.0    0.0     0.0    0.0
+                        hoistList.\               Options.Applicative.Internal         Options/Applicative/Internal.hs:176:29-55                 3200          3    0.0    0.0     0.0    0.0
+                    runNondetT                    Options.Applicative.Internal         Options/Applicative/Internal.hs:224:5-14                  3195          3    0.0    0.0     0.0    0.0
+                    >>=                           Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          3109          0    0.0    0.0     0.0    0.0
+                     mplus                        Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          3193          3    0.0    0.0     0.0    0.0
+                      stepListT                   Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  3194          3    0.0    0.0     0.0    0.0
+                      return                      Options.Applicative.Internal         Options/Applicative/Internal.hs:234:3-15                  3201          0    0.0    0.0     0.0    0.0
+                       pure                       Options.Applicative.Internal         Options/Applicative/Internal.hs:230:3-23                  3202          0    0.0    0.0     0.0    0.0
+                        pure                      Options.Applicative.Internal         Options/Applicative/Internal.hs:195:3-25                  3203          0    0.0    0.0     0.0    0.0
+                         hoistList                Options.Applicative.Internal         Options/Applicative/Internal.hs:176:1-62                  3204          0    0.0    0.0     0.0    0.0
+                          hoistList.\             Options.Applicative.Internal         Options/Applicative/Internal.hs:176:29-55                 3205          0    0.0    0.0     0.0    0.0
+                     stepListT                    Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  3192          3    0.0    0.0     0.0    0.0
+                     <!>                          Options.Applicative.Internal         Options/Applicative/Internal.hs:(249,1)-(252,15)          3110          0    0.0    0.0     0.0    0.0
+                      mplus                       Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          3111          0    0.0    0.0     0.0    0.0
+                     <|>                          Options.Applicative.Internal         Options/Applicative/Internal.hs:243:3-15                  3145          0    0.0    0.0     0.0    0.0
+                      mplus                       Options.Applicative.Internal         Options/Applicative/Internal.hs:239:3-57                  3146          0    0.0    0.0     0.0    0.0
+                       mplus                      Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          3147          0    0.0    0.0     0.0    0.0
+                   mzero                          Options.Applicative.Internal         Options/Applicative/Internal.hs:238:3-23                  3112          0    0.0    0.0     0.0    0.0
+                    mzero                         Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  3113          0    0.0    0.0     0.0    0.0
+                   searchOpt.\                    Options.Applicative.Common           Options/Applicative/Common.hs:(174,45)-(179,20)           3176          0    0.0    0.0     0.0    0.0
+                    lift                          Options.Applicative.Internal         Options/Applicative/Internal.hs:246:3-30                  3177          0    0.0    0.0     0.0    0.0
+                     lift                         Options.Applicative.Internal         Options/Applicative/Internal.hs:211:3-38                  3178          0    0.0    0.0     0.0    0.0
+                      pure                        Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3191          1    0.0    0.0     0.0    0.0
+                    optMatches                    Options.Applicative.Common           Options/Applicative/Common.hs:(99,1)-(131,26)             3179          0    0.0    0.0     0.0    0.0
+                     pure                         Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3182          1    0.0    0.0     0.0    0.0
+              runNondetT                          Options.Applicative.Internal         Options/Applicative/Internal.hs:224:5-14                  2516          2    0.0    0.0     0.0    0.0
+              takeListT                           Options.Applicative.Internal         Options/Applicative/Internal.hs:(179,1)-(180,75)          2513          2    0.0    0.0     0.0    0.0
+               stepListT                          Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2515          2    0.0    0.0     0.0    0.0
+               bimapTStep                         Options.Applicative.Internal         Options/Applicative/Internal.hs:(172,1)-(173,46)          3092          1    0.0    0.0     0.0    0.0
+               mzero                              Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  3094          1    0.0    0.0     0.0    0.0
+               stepParser                         Options.Applicative.Common           Options/Applicative/Common.hs:(191,1)-(198,28)            2551          0    0.0    0.0     0.0    0.0
+                pure                              Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   2656         82    0.0    0.0     0.0    0.0
+                mzero                             Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2653          0    0.0    0.0     0.0    0.0
+                 pure                             Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   2655          8    0.0    0.0     0.0    0.0
+                searchOpt                         Options.Applicative.Common           Options/Applicative/Common.hs:(174,1)-(179,20)            2552          0    0.0    0.0     0.0    0.0
+                 searchParser                     Options.Applicative.Common           Options/Applicative/Common.hs:(155,1)-(170,40)            2553          0    0.0    0.0     0.0    0.0
+                  <!>                             Options.Applicative.Internal         Options/Applicative/Internal.hs:(249,1)-(252,15)          2574          0    0.0    0.0     0.0    0.0
+                   >>=                            Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          2671         12    0.0    0.0     0.0    0.0
+                    stepListT                     Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2675         20    0.0    0.0     0.0    0.0
+                    mplus                         Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          2676          8    0.0    0.0     0.0    0.0
+                     stepListT                    Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2677         16    0.0    0.0     0.0    0.0
+                     >>=                          Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  2686          0    0.0    0.0     0.0    0.0
+                   lift                           Options.Applicative.Internal         Options/Applicative/Internal.hs:211:3-38                  2674          0    0.0    0.0     0.0    0.0
+                    mzero                         Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2729          0    0.0    0.0     0.0    0.0
+                   mplus                          Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          2575          0    0.0    0.0     0.0    0.0
+                    stepListT                     Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2669          4    0.0    0.0     0.0    0.0
+                    >>=                           Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          2730          0    0.0    0.0     0.0    0.0
+                    >>=                           Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  2576          0    0.0    0.0     0.0    0.0
+                     >>=                          Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          2577          0    0.0    0.0     0.0    0.0
+                   pure                           Options.Applicative.Internal         Options/Applicative/Internal.hs:195:3-25                  2681          0    0.0    0.0     0.0    0.0
+                    hoistList                     Options.Applicative.Internal         Options/Applicative/Internal.hs:176:1-62                  2682          0    0.0    0.0     0.0    0.0
+                     hoistList.\                  Options.Applicative.Internal         Options/Applicative/Internal.hs:176:29-55                 2683          0    0.0    0.0     0.0    0.0
+                     mzero                        Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2727          0    0.0    0.0     0.0    0.0
+                  <|>                             Options.Applicative.Internal         Options/Applicative/Internal.hs:243:3-15                  2554          0    0.0    0.0     0.0    0.0
+                   mplus                          Options.Applicative.Internal         Options/Applicative/Internal.hs:239:3-57                  2555          0    0.0    0.0     0.0    0.0
+                    mplus                         Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          2556          0    0.0    0.0     0.0    0.0
+                     stepListT                    Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2657         31    0.0    0.0     0.0    0.0
+                     >>=                          Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  2615          0    0.0    0.0     0.0    0.0
+                      >>=                         Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          2616          0    0.0    0.0     0.0    0.0
+                  >>=                             Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  2578          0    0.0    0.0     0.0    0.0
+                   return                         Options.Applicative.Internal         Options/Applicative/Internal.hs:234:3-15                  3081          3    0.0    0.0     0.0    0.0
+                    pure                          Options.Applicative.Internal         Options/Applicative/Internal.hs:230:3-23                  3082          3    0.0    0.0     0.0    0.0
+                     pure                         Options.Applicative.Internal         Options/Applicative/Internal.hs:195:3-25                  3083          3    0.0    0.0     0.0    0.0
+                      hoistList                   Options.Applicative.Internal         Options/Applicative/Internal.hs:176:1-62                  3084          3    0.0    0.0     0.0    0.0
+                       hoistList.\                Options.Applicative.Internal         Options/Applicative/Internal.hs:176:29-55                 3085          3    0.0    0.0     0.0    0.0
+                   runNondetT                     Options.Applicative.Internal         Options/Applicative/Internal.hs:224:5-14                  3080          3    0.0    0.0     0.0    0.0
+                   >>=                            Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          2582          0    0.0    0.0     0.0    0.0
+                    mplus                         Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          3078          3    0.0    0.0     0.0    0.0
+                     stepListT                    Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  3079          3    0.0    0.0     0.0    0.0
+                     return                       Options.Applicative.Internal         Options/Applicative/Internal.hs:234:3-15                  3086          0    0.0    0.0     0.0    0.0
+                      pure                        Options.Applicative.Internal         Options/Applicative/Internal.hs:230:3-23                  3087          0    0.0    0.0     0.0    0.0
+                       pure                       Options.Applicative.Internal         Options/Applicative/Internal.hs:195:3-25                  3088          0    0.0    0.0     0.0    0.0
+                        hoistList                 Options.Applicative.Internal         Options/Applicative/Internal.hs:176:1-62                  3089          0    0.0    0.0     0.0    0.0
+                         hoistList.\              Options.Applicative.Internal         Options/Applicative/Internal.hs:176:29-55                 3090          0    0.0    0.0     0.0    0.0
+                    stepListT                     Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  3077          3    0.0    0.0     0.0    0.0
+                    <!>                           Options.Applicative.Internal         Options/Applicative/Internal.hs:(249,1)-(252,15)          2583          0    0.0    0.0     0.0    0.0
+                     mplus                        Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          2584          0    0.0    0.0     0.0    0.0
+                    <|>                           Options.Applicative.Internal         Options/Applicative/Internal.hs:243:3-15                  2590          0    0.0    0.0     0.0    0.0
+                     mplus                        Options.Applicative.Internal         Options/Applicative/Internal.hs:239:3-57                  2591          0    0.0    0.0     0.0    0.0
+                      mplus                       Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          2592          0    0.0    0.0     0.0    0.0
+                    searchOpt.\                   Options.Applicative.Common           Options/Applicative/Common.hs:(174,45)-(179,20)           2651          0    0.0    0.0     0.0    0.0
+                     mzero                        Options.Applicative.Internal         Options/Applicative/Internal.hs:238:3-23                  2652          0    0.0    0.0     0.0    0.0
+                  empty                           Options.Applicative.Internal         Options/Applicative/Internal.hs:242:3-15                  2666          0    0.0    0.0     0.0    0.0
+                   mzero                          Options.Applicative.Internal         Options/Applicative/Internal.hs:238:3-23                  2667          0    0.0    0.0     0.0    0.0
+                    mzero                         Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2668          0    0.0    0.0     0.0    0.0
+                  mzero                           Options.Applicative.Internal         Options/Applicative/Internal.hs:238:3-23                  2661          0    0.0    0.0     0.0    0.0
+                   mzero                          Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2662          0    0.0    0.0     0.0    0.0
+                  searchOpt.\                     Options.Applicative.Common           Options/Applicative/Common.hs:(174,45)-(179,20)           3024          0    0.0    0.0     0.0    0.0
+                   lift                           Options.Applicative.Internal         Options/Applicative/Internal.hs:246:3-30                  3025          0    0.0    0.0     0.0    0.0
+                    lift                          Options.Applicative.Internal         Options/Applicative/Internal.hs:211:3-38                  3026          0    0.0    0.0     0.0    0.0
+                     pure                         Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3075          1    0.0    0.0     0.0    0.0
+                   optMatches                     Options.Applicative.Common           Options/Applicative/Common.hs:(99,1)-(131,26)             3027          0    0.0    0.0     0.0    0.0
+                    pure                          Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3030          1    0.0    0.0     0.0    0.0
+             prefDisambiguate                     Options.Applicative.Types            Options/Applicative/Types.hs:101:5-20                     2502          2    0.0    0.0     0.0    0.0
+             stepParser                           Options.Applicative.Common           Options/Applicative/Common.hs:(191,1)-(198,28)            2517          2    0.0    0.0     0.0    0.0
+              pure                                Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3076          2    0.0    0.0     0.0    0.0
+              searchOpt                           Options.Applicative.Common           Options/Applicative/Common.hs:(174,1)-(179,20)            2538          2    0.0    0.0     0.0    0.0
+               searchParser                       Options.Applicative.Common           Options/Applicative/Common.hs:(155,1)-(170,40)            2539         49    0.0    0.0     0.0    0.0
+                >>=                               Options.Applicative.Internal         Options/Applicative/Internal.hs:235:3-52                  2568         24    0.0    0.0     0.0    0.0
+                 >>=                              Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          2569         24    0.0    0.0     0.0    0.0
+                  stepListT                       Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2579         24    0.0    0.0     0.0    0.0
+                <|>                               Options.Applicative.Internal         Options/Applicative/Internal.hs:243:3-15                  2542         18    0.0    0.0     0.0    0.0
+                 mplus                            Options.Applicative.Internal         Options/Applicative/Internal.hs:239:3-57                  2543         34    0.0    0.0     0.0    0.0
+                  mplus                           Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          2544         34    0.0    0.0     0.0    0.0
+                   stepListT                      Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2557         34    0.0    0.0     0.0    0.0
+                   <!>                            Options.Applicative.Internal         Options/Applicative/Internal.hs:(249,1)-(252,15)          2565          0    0.0    0.0     0.0    0.0
+                empty                             Options.Applicative.Internal         Options/Applicative/Internal.hs:242:3-15                  2663         15    0.0    0.0     0.0    0.0
+                 mzero                            Options.Applicative.Internal         Options/Applicative/Internal.hs:238:3-23                  2664         15    0.0    0.0     0.0    0.0
+                  mzero                           Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2665         15    0.0    0.0     0.0    0.0
+                mzero                             Options.Applicative.Internal         Options/Applicative/Internal.hs:238:3-23                  2659         13    0.0    0.0     0.0    0.0
+                 mzero                            Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2660         13    0.0    0.0     0.0    0.0
+                searchOpt.\                       Options.Applicative.Common           Options/Applicative/Common.hs:(174,45)-(179,20)           2617         10    0.0    0.0     0.0    0.0
+                 optMain                          Options.Applicative.Types            Options/Applicative/Types.hs:144:5-11                     2619         10    0.0    0.0     0.0    0.0
+                 optMatches                       Options.Applicative.Common           Options/Applicative/Common.hs:(99,1)-(131,26)             2618         10    0.0    0.0     0.0    0.0
+                  optMatches.has_name             Options.Applicative.Common           Options/Applicative/Common.hs:(129,5)-(131,26)            2638         10    0.0    0.0     0.0    0.0
+                   ==                             Options.Applicative.Types            Options/Applicative/Types.hs:115:13-14                    2644         10    0.0    0.0     0.0    0.0
+                  pure                            Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3034          6    0.0    0.0     0.0    0.0
+                  optMatches.mb_args              Options.Applicative.Common           Options/Applicative/Common.hs:104:11-52                   3031          2    0.0    0.0     0.0    0.0
+                   uncons                         Options.Applicative.Internal         Options/Applicative/Internal.hs:(94,1)-(95,30)            3032          2    0.0    0.0     0.0    0.0
+                  runReadM                        Options.Applicative.Internal         Options/Applicative/Internal.hs:98:1-63                   3035          2    0.0    0.0     0.0    0.0
+                   hoistEither                    Options.Applicative.Internal         Options/Applicative/Internal.hs:88:1-34                   3071          2    0.0    0.0     0.0    0.0
+                    pure                          Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3074          2    0.0    0.0     0.0    0.0
+                   withReadM                      Options.Applicative.Internal         Options/Applicative/Internal.hs:(101,1)-(104,12)          3037          0    0.0    0.0     0.0    0.0
+                    crReader                      Options.Applicative.Types            Options/Applicative/Types.hs:201:5-12                     3039          2    0.0    0.0     0.0    0.0
+                     execParserPure.pinfo'        Options.Applicative.Extra            Options/Applicative/Extra.hs:(136,5)-(138,51)             3045          0    0.0    0.0     0.0    0.0
+                      fmap                        Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             3046          0    0.0    0.0     0.0    0.0
+                       fmap                       Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     3047          0    0.0    0.0     0.0    0.0
+                        fmap                      Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             3048          0    0.0    0.0     0.0    0.0
+                         fmap                     Options.Applicative.Types            Options/Applicative/Types.hs:204:3-45                     3049          0    0.0    0.0     0.0    0.0
+                          fmap                    Options.Applicative.Types            Options/Applicative/Types.hs:165:3-37                     3050          0    0.0    0.0     0.0    0.0
+                     options                      Main                                 app/Main.hs:(16,1)-(27,9)                                 3185          0    0.0    0.0     0.0    0.0
+                      auto                        Options.Applicative.Builder          Options/Applicative/Builder.hs:(119,1)-(121,58)           3186          0    0.0    0.0     0.0    0.0
+                       eitherReader               Options.Applicative.Builder          Options/Applicative/Builder.hs:139:1-60                   3187          0    0.0    0.0     0.0    0.0
+                        >>=                       Options.Applicative.Types            Options/Applicative/Types.hs:177:3-43                     3188          0    0.0    0.0     0.0    0.0
+                         auto.\                   Options.Applicative.Builder          Options/Applicative/Builder.hs:(119,31)-(121,58)          3190          1    0.0    0.0     0.0    0.0
+                         unReadM                  Options.Applicative.Types            Options/Applicative/Types.hs:162:5-11                     3189          1    0.0    0.0     0.0    0.0
+                    unReadM                       Options.Applicative.Types            Options/Applicative/Types.hs:162:5-11                     3038          2    0.0    0.0     0.0    0.0
+                  withReadM                       Options.Applicative.Internal         Options/Applicative/Internal.hs:(101,1)-(104,12)          3036          2    0.0    0.0     0.0    0.0
+                 searchOpt.\.disambiguate         Options.Applicative.Common           Options/Applicative/Common.hs:(175,7)-(176,49)            2639         10    0.0    0.0     0.0    0.0
+                 lift                             Options.Applicative.Internal         Options/Applicative/Internal.hs:246:3-30                  3022          2    0.0    0.0     0.0    0.0
+                  lift                            Options.Applicative.Internal         Options/Applicative/Internal.hs:211:3-38                  3023          2    0.0    0.0     0.0    0.0
+                <!>                               Options.Applicative.Internal         Options/Applicative/Internal.hs:(249,1)-(252,15)          2563          8    0.0    0.0     0.0    0.0
+                 runNondetT                       Options.Applicative.Internal         Options/Applicative/Internal.hs:224:5-14                  2567         13    0.0    0.0     0.0    0.0
+                 mplus                            Options.Applicative.Internal         Options/Applicative/Internal.hs:(215,3)-(219,52)          2564          8    0.0    0.0     0.0    0.0
+                  stepListT                       Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2566          8    0.0    0.0     0.0    0.0
+                 >>=                              Options.Applicative.Internal         Options/Applicative/Internal.hs:(200,3)-(204,54)          2670          5    0.0    0.0     0.0    0.0
+                  stepListT                       Options.Applicative.Internal         Options/Applicative/Internal.hs:165:5-13                  2672          5    0.0    0.0     0.0    0.0
+                 lift                             Options.Applicative.Internal         Options/Applicative/Internal.hs:211:3-38                  2673          5    0.0    0.0     0.0    0.0
+                  mzero                           Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2728          4    0.0    0.0     0.0    0.0
+                 pure                             Options.Applicative.Internal         Options/Applicative/Internal.hs:195:3-25                  2678          5    0.0    0.0     0.0    0.0
+                  hoistList                       Options.Applicative.Internal         Options/Applicative/Internal.hs:176:1-62                  2679          5    0.0    0.0     0.0    0.0
+                   hoistList.\                    Options.Applicative.Internal         Options/Applicative/Internal.hs:176:29-55                 2680          5    0.0    0.0     0.0    0.0
+                   mzero                          Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2726          4    0.0    0.0     0.0    0.0
+                evalParser                        Options.Applicative.Common           Options/Applicative/Common.hs:(241,1)-(245,56)            2816          5    0.0    0.0     0.0    0.0
+                bashCompletionParser              Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2817          0    0.0    0.0     0.0    0.0
+                 bashCompletionParser.complParser Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2818          0    0.0    0.0     0.0    0.0
+                  many                            Options.Applicative.Types            Options/Applicative/Types.hs:275:3-26                     2819          0    0.0    0.0     0.0    0.0
+                   fromM                          Options.Applicative.Types            Options/Applicative/Types.hs:257:1-26                     2820          0    0.0    0.0     0.0    0.0
+                    manyM                         Options.Applicative.Types            Options/Applicative/Types.hs:(263,1)-(267,30)             2821          0    0.0    0.0     0.0    0.0
+                     >>=                          Options.Applicative.Types            Options/Applicative/Types.hs:247:3-64                     2822          0    0.0    0.0     0.0    0.0
+                      >>=.\                       Options.Applicative.Types            Options/Applicative/Types.hs:247:37-64                    2823          0    0.0    0.0     0.0    0.0
+                       >>=.\.\                    Options.Applicative.Types            Options/Applicative/Types.hs:247:46-63                    2824          1    0.0    0.0     0.0    0.0
+                        runParserM                Options.Applicative.Types            Options/Applicative/Types.hs:243:5-14                     2825          1    0.0    0.0     0.0    0.0
+               searchOpt.\                        Options.Applicative.Common           Options/Applicative/Common.hs:(174,45)-(179,20)           2640          0    0.0    0.0     0.0    0.0
+                mzero                             Options.Applicative.Internal         Options/Applicative/Internal.hs:238:3-23                  2646          1    0.0    0.0     0.0    0.0
+                 mzero                            Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  2647          1    0.0    0.0     0.0    0.0
+                searchOpt.\.disambiguate          Options.Applicative.Common           Options/Applicative/Common.hs:(175,7)-(176,49)            2641          0    0.0    0.0     0.0    0.0
+                 prefDisambiguate                 Options.Applicative.Types            Options/Applicative/Types.hs:101:5-20                     2642          2    0.0    0.0     0.0    0.0
+              parseWord                           Options.Applicative.Common           Options/Applicative/Common.hs:(140,1)-(150,21)            3098          1    0.0    0.0     0.0    0.0
+               parseWord.arg                      Options.Applicative.Common           Options/Applicative/Common.hs:148:5-41                    3183          1    0.0    0.0     0.0    0.0
+              disamb                              Options.Applicative.Internal         Options/Applicative/Internal.hs:(258,1)-(265,18)          3259          0    0.0    0.0     0.0    0.0
+               takeListT                          Options.Applicative.Internal         Options/Applicative/Internal.hs:(179,1)-(180,75)          3260          0    0.0    0.0     0.0    0.0
+            exitP                                 Options.Applicative.Internal         Options/Applicative/Internal.hs:81:3-75                   3210          1    0.0    0.0     0.0    0.0
+            runParser.newPolicy                   Options.Applicative.Common           Options/Applicative/Common.hs:(221,5)-(223,24)            3096          1    0.0    0.0     0.0    0.0
+            runParser.result                      Options.Applicative.Common           Options/Applicative/Common.hs:216:5-47                    3211          1    0.0    0.0     0.0    0.0
+             evalParser                           Options.Applicative.Common           Options/Applicative/Common.hs:(241,1)-(245,56)            3212          7    0.0    0.0     0.0    0.0
+              runParser.do_step                   Options.Applicative.Common           Options/Applicative/Common.hs:(217,5)-(219,58)            3261          0    0.0    0.0     0.0    0.0
+               stepParser                         Options.Applicative.Common           Options/Applicative/Common.hs:(191,1)-(198,28)            3262          0    0.0    0.0     0.0    0.0
+                searchOpt                         Options.Applicative.Common           Options/Applicative/Common.hs:(174,1)-(179,20)            3263          0    0.0    0.0     0.0    0.0
+                 searchParser                     Options.Applicative.Common           Options/Applicative/Common.hs:(155,1)-(170,40)            3264          0    0.0    0.0     0.0    0.0
+                  searchOpt.\                     Options.Applicative.Common           Options/Applicative/Common.hs:(174,45)-(179,20)           3265          0    0.0    0.0     0.0    0.0
+                   optMatches                     Options.Applicative.Common           Options/Applicative/Common.hs:(99,1)-(131,26)             3266          0    0.0    0.0     0.0    0.0
+                    runReadM                      Options.Applicative.Internal         Options/Applicative/Internal.hs:98:1-63                   3267          0    0.0    0.0     0.0    0.0
+                     withReadM                    Options.Applicative.Internal         Options/Applicative/Internal.hs:(101,1)-(104,12)          3268          0    0.0    0.0     0.0    0.0
+                      crReader                    Options.Applicative.Types            Options/Applicative/Types.hs:201:5-12                     3269          0    0.0    0.0     0.0    0.0
+                       execParserPure.pinfo'      Options.Applicative.Extra            Options/Applicative/Extra.hs:(136,5)-(138,51)             3270          0    0.0    0.0     0.0    0.0
+                        fmap                      Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             3271          0    0.0    0.0     0.0    0.0
+                         fmap                     Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     3272          0    0.0    0.0     0.0    0.0
+                          fmap                    Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             3273          0    0.0    0.0     0.0    0.0
+                           fmap                   Options.Applicative.Types            Options/Applicative/Types.hs:204:3-45                     3274          0    0.0    0.0     0.0    0.0
+                            fmap                  Options.Applicative.Types            Options/Applicative/Types.hs:165:3-37                     3275          0    0.0    0.0     0.0    0.0
+                         main.opts                Main                                 app/Main.hs:(37,11)-(39,59)                               3278          0    0.0    0.0     0.0    0.0
+           pure                                   Options.Applicative.Internal         Options/Applicative/Internal.hs:55:3-21                   3249          1    0.0    0.0     0.0    0.0
+          runParser                               Options.Applicative.Common           Options/Applicative/Common.hs:(205,1)-(223,24)            2493          0    0.0    0.0     0.0    0.0
+         runParser                                Options.Applicative.Common           Options/Applicative/Common.hs:(205,1)-(223,24)            2491          1    0.0    0.0     0.0    0.0
+          >>=                                     Options.Applicative.Internal         Options/Applicative/Internal.hs:64:3-50                   2492          1    0.0    0.0     0.0    0.0
+          runParser.do_step                       Options.Applicative.Common           Options/Applicative/Common.hs:(217,5)-(219,58)            2498          0    0.0    0.0     0.0    0.0
+           disamb                                 Options.Applicative.Internal         Options/Applicative/Internal.hs:(258,1)-(265,18)          2511          0    0.0    0.0     0.0    0.0
+            takeListT                             Options.Applicative.Internal         Options/Applicative/Internal.hs:(179,1)-(180,75)          2512          2    0.0    0.0     0.0    0.0
+             mzero                                Options.Applicative.Internal         Options/Applicative/Internal.hs:214:3-29                  3093          1    0.0    0.0     0.0    0.0
+           stepParser                             Options.Applicative.Common           Options/Applicative/Common.hs:(191,1)-(198,28)            2536          0    0.0    0.0     0.0    0.0
+            parseWord                             Options.Applicative.Common           Options/Applicative/Common.hs:(140,1)-(150,21)            2537          1    0.0    0.0     0.0    0.0
+             parseWord.arg                        Options.Applicative.Common           Options/Applicative/Common.hs:148:5-41                    3033          1    0.0    0.0     0.0    0.0
+      execParserPure.pinfo'                       Options.Applicative.Extra            Options/Applicative/Extra.hs:(136,5)-(138,51)             2519          1    0.0    0.0     0.0    0.0
+       fmap                                       Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             2560         27    0.0    0.0     0.0    0.0
+        fmap                                      Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     2620          5    0.0    0.0     0.0    0.0
+         fmap                                     Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             2624          5    0.0    0.0     0.0    0.0
+          fmap                                    Options.Applicative.Types            Options/Applicative/Types.hs:204:3-45                     3040          1    0.0    0.0     0.0    0.0
+           fmap                                   Options.Applicative.Types            Options/Applicative/Types.hs:165:3-37                     3044          1    0.0    0.0     0.0    0.0
+       bashCompletionParser                       Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(35,1)-(65,7)       2558          1    0.0    0.0     0.0    0.0
+        bashCompletionParser.complParser          Options.Applicative.BashCompletion   Options/Applicative/BashCompletion.hs:(40,5)-(65,7)       2559          1    0.0    0.0     0.0    0.0
+         fmap                                     Options.Applicative.Types            Options/Applicative/Types.hs:(232,3)-(236,43)             2562         16    0.0    0.0     0.0    0.0
+          fmap                                    Options.Applicative.Types            Options/Applicative/Types.hs:158:3-43                     2621          2    0.0    0.0     0.0    0.0
+           fmap                                   Options.Applicative.Types            Options/Applicative/Types.hs:(218,3)-(221,66)             2625          2    0.0    0.0     0.0    0.0
+       infoParser                                 Options.Applicative.Types            Options/Applicative/Types.hs:84:5-14                      2969          1    0.0    0.0     0.0    0.0
+    handleParseResult                             Options.Applicative.Extra            Options/Applicative/Extra.hs:(82,1)-(94,17)               3276          1    0.0    0.0     0.0    0.0
