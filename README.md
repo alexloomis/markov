@@ -10,11 +10,11 @@ p(x,x) = r, and
 p(x,x+1) = s.
 
 When x = 0, let
-p(x,0) = q + r,
-p(x,x+1) = s,
+p(x,0) = q+r,
+p(x,x+1) = s.
 Let p(x,y) = 0 in all other cases.
 Suppose we wanted to find
-P\[X<sub>n</sub> = j ∩ d = k]
+P\[X<sub>n</sub> = j ∩ d = k],
 where d denotes the number of transitions from a positive integer to zero.
 There are three values we need to track —
 extinctions, probability, and state —
