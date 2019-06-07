@@ -24,6 +24,12 @@ import Markov
 -- From a matrix
 ---------------------------------------------------------------
 
+-- |An example defined from a matrix.
+--
+-- >>> chain [pure 't' :: MProd Double Char] !! 100
+-- [MProd {prod = 0.50609756097561, pstate = 'a'}
+-- ,MProd {prod = 0.2926829268292684, pstate = 'l'}
+-- ,MProd {prod = 0.20121951219512202, pstate = 't'}]
 instance Markov (MProd Double) Char where
     transition = let mat = [ [0.4, 0.3, 0.3]
                            , [0.2, 0.1, 0.7]
