@@ -2,14 +2,15 @@
 FlexibleContexts #-}
 {-|
 Module      : Markov
-Description : A class for Markov processes.
+Description : Deterministic analysis of Markov processes.
 Maintainer  : atloomis@math.arizona.edu
 Stability   : experimental
 
-Two type classes for implementing Markov chains.
+Two type classes for deterministically analyzing Markov chains.
 'Markov0' is intended to list possible outcomes.
 'Markov' should allow for more sophisticated analysis.
 See "Examples" for examples.
+See README for a detailed description.
 -}
 module Markov (
               -- *Markov0
