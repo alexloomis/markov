@@ -21,6 +21,23 @@ module Examples ( Simple (..)
 import Markov
 
 ---------------------------------------------------------------
+-- From a matrix
+---------------------------------------------------------------
+
+-- |An example defined from a matrix.
+--
+-- >>> chain [pure 't' :: MProd Double Char] !! 100
+-- [MProd {prod = 0.50609756097561, pstate = 'a'}
+-- ,MProd {prod = 0.2926829268292684, pstate = 'l'}
+-- ,MProd {prod = 0.20121951219512202, pstate = 't'}]
+instance Markov (MProd Double) Char where
+    transition = let mat = [ [0.4, 0.3, 0.3]
+                           , [0.2, 0.1, 0.7]
+                           , [0.9, 0.1, 0.0] ]
+                     chars = ['a','t','l']
+                 in fromLists mat chars
+    
+---------------------------------------------------------------
 -- Simple random walk
 ---------------------------------------------------------------
 
@@ -195,13 +212,13 @@ instance Markov (MProd Double) FillBin where
         _ -> error "Pattern not matched in transition"
         where indices = [1..size x]
 
--- |>>> fromLists [1,3,5,10] [(3,5),(9,9),(8,3)]
+-- |>>> fBFromLists [1,3,5,10] [(3,5),(9,9),(8,3)]
 -- 1 (3,5) 3 (9,9) 5 (8,3) 10
-fromLists :: [Gap] -> [Bin] -> FillBin
-fromLists gaps bins = case (gaps,bins) of
+fBFromLists :: [Gap] -> [Bin] -> FillBin
+fBFromLists gaps bins = case (gaps,bins) of
     (g:_  , []  ) -> End g
     ([g]  , _   ) -> End g
-    (g:gs , b:bs) -> Ext g b $ fromLists gs bs
+    (g:gs , b:bs) -> Ext g b $ fBFromLists gs bs
     ([]   , _   ) -> End 0
 
 -- |Create state where all bins start as (0,0).
@@ -209,7 +226,7 @@ fromLists gaps bins = case (gaps,bins) of
 -- >>> initial [5,7,0]
 -- 5 (0,0) 7 (0,0) 0
 initial :: [Int] -> FillBin
-initial gs = fromLists gs $ repeat (0,0)
+initial gs = fBFromLists gs $ repeat (0,0)
 
 -- |The number of bins.
 size :: FillBin -> Int
