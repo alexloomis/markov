@@ -1,5 +1,4 @@
-{-# LANGUAGE MultiParamTypeClasses, ConstrainedClassMethods, FlexibleInstances,
-FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts #-}
 {-|
 Module      : Markov
 Description : Deterministic analysis of Markov processes.
