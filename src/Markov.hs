@@ -173,19 +173,27 @@ instance Eq a => Semigroup (MNull a) where
     (<>) x _ = x
 
 ---------------------------------------------------------------
--- Track
+-- DProd
 ---------------------------------------------------------------
 
--- |An implementation of markov chains.
--- Instances of Markov should follow the laws:
---
--- prop> x <> x == x
-class (Track t, Ord m) => Markov1 t m where
-    newtransition :: m -> [Status t (m -> m)]
-    newstep       :: Status t m -> [Status t m]
-    newchain      :: [Status t m] -> [[Status t m]]
-    newstep x = fmap (x <**>) (newtransition $ status x)
-    newchain  = DL.iterate' $ map sconcat . NE.group . DL.sort . concatMap newstep
+class DProd a b where
+    data Prod a b :: *
+    projl :: Prod a b -> a
+    projr :: Prod a b -> b
+    dprod :: a -> b -> Prod a b
+
+instance (DProd a b, Show a, Show b) => Show (Prod a b) where
+    show x = "(" ++ show (projl x) ++ ", " ++ show (projr x) ++ ")"
+instance (DProd a b, Eq a, Eq b) => Eq (Prod a b) where
+    x == y = projl x == projl y && projr x == projr y
+instance (DProd a b, Semigroup a, Semigroup b) => Semigroup (Prod a b) where
+    x <> y = dprod (projl x <> projl y) (projr x <> projr y)
+instance (DProd a b, Monoid a, Monoid b) => Monoid (Prod a b) where
+    mempty = dprod mempty mempty
+
+---------------------------------------------------------------
+-- Track
+---------------------------------------------------------------
 
 -- @combine@ should be commutative and associative, and:
 -- |prop> combine x x == x
@@ -211,6 +219,21 @@ instance Track a => Applicative (Status a) where
 instance Track a => Semigroup (Status a b) where
     x <> y = build (combine (track x) (track y)) (status x)
 
+-- |An implementation of markov chains.
+-- Instances of Markov should follow the laws:
+--
+-- prop> x <> x == x
+class (Track t, Ord m) => Markov1 t m where
+    transition1 :: m -> [Status t (m -> m)]
+    step1       :: Status t m -> [Status t m]
+    chain1      :: [Status t m] -> [[Status t m]]
+    step1 x = fmap (x <**>) (transition1 $ status x)
+    chain1  = DL.iterate' $ map sconcat . NE.group . DL.sort . concatMap step1
+
+---------------------------------------------------------------
+-- Track -- MCon
+---------------------------------------------------------------
+
 data MCon a = MCon a deriving Eq
 instance Show a => Show (MCon a) where
     show (MCon a) = show a
@@ -228,8 +251,21 @@ instance Track (MCon String) where
     status = beta
     build = Status
 
-newtype TestWalk = TestWalk Int deriving (Enum, Eq, Ord, Show)
+---------------------------------------------------------------
+-- Track -- MProd1
+---------------------------------------------------------------
 
-instance Markov1 (MCon String) TestWalk where
-    newtransition _ = [ build (MCon "r") succ
-                      , build (MCon "l") pred ]
+data MProd1 a = MProd1 a
+instance Show a => Show (MProd1 a) where
+    show (MProd1 a) = show a
+instance Num a => Semigroup (MProd1 a) where
+    MProd1 x <> MProd1 y = MProd1 (x * y)
+instance Num a => Monoid (MProd1 a) where
+    mempty = MProd1 1
+
+-- instance Num a => Track (MProd1 a) where
+    -- data Status (MProd1 a) b = Status1 {alpha1 :: MProd1 a, beta1 :: b}
+    -- combine x _ = x
+    -- track = alpha
+    -- status = beta
+    -- build = Status

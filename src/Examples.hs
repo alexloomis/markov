@@ -88,6 +88,9 @@ instance Markov (MSum Int) Simple where
     transition _ = [ MSum 1 pred
                    , MSum 0 id
                    , MSum 0 succ ]
+instance Markov1 (MCon String) Simple where
+    transition1 _ = [ build (MCon "l") pred
+                    , build (MCon "r") succ ]
 
 ---------------------------------------------------------------
 -- Urn model
