@@ -52,9 +52,10 @@ class (Eq m) => Markov0 m where
 ---------------------------------------------------------------
 
 -- |An implementation of markov chains.
--- Instances of Markov should follow the law:
+-- Instances of Markov should follow the laws:
 --
--- prop> transition (f x) == transition (pure x)
+-- prop> transition (f x) = transition (pure x)
+-- prop> x <> x == x
 class Applicative f => Markov f m where
     -- |The transition functions from a state, and the probability of each transition.
     transition :: f m -> [f (m -> m)]
