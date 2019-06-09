@@ -1,31 +1,36 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, TypeFamilies, FlexibleInstances,
+GeneralizedNewtypeDeriving #-}
 {-|
 Module      : Markov
-Description : Deterministic analysis of Markov processes.
+Description : Analysis of Markov processes with known parameters.
 Maintainer  : atloomis@math.arizona.edu
 Stability   : experimental
 
-Two type classes for deterministically analyzing Markov chains.
+Two type classes for deterministically analyzing
+Markov chains with known parameters.
 'Markov0' is intended to list possible outcomes.
 'Markov' should allow for more sophisticated analysis.
 See "Examples" for examples.
 See README for a detailed description.
 -}
-module Markov (
-              -- *Markov0
-                Markov0 (..)
-              -- *Markov
-              , Markov (..)
-              -- *MProd
-              , MProd (..)
-              , randomMProd
-              , randomPath
-              , fromLists
-              -- *MSum
-              , MSum (..)
-              -- *MNull
-              , MNull (..)
-              ) where
+-- module Markov (
+              -- -- *Markov0
+                -- Markov0 (..)
+              -- -- *Markov
+              -- , Markov (..)
+              -- -- *MProd
+              -- , MProd (..)
+              -- , randomMProd
+              -- , randomPath
+              -- , fromLists
+              -- -- *MSum
+              -- , MSum (..)
+              -- -- *MNull
+              -- , MNull (..)
+              -- -- *Experimental
+              -- , Track (..)
+              -- ) where
+module Markov where
 
 import Control.Applicative
 import Data.Semigroup
@@ -166,3 +171,65 @@ instance Applicative MNull where
 
 instance Eq a => Semigroup (MNull a) where
     (<>) x _ = x
+
+---------------------------------------------------------------
+-- Track
+---------------------------------------------------------------
+
+-- |An implementation of markov chains.
+-- Instances of Markov should follow the laws:
+--
+-- prop> x <> x == x
+class (Track t, Ord m) => Markov1 t m where
+    newtransition :: m -> [Status t (m -> m)]
+    newstep       :: Status t m -> [Status t m]
+    newchain      :: [Status t m] -> [[Status t m]]
+    newstep x = fmap (x <**>) (newtransition $ status x)
+    newchain  = DL.iterate' $ map sconcat . NE.group . DL.sort . concatMap newstep
+
+-- @combine@ should be commutative and associative, and:
+-- |prop> combine x x == x
+-- |prop> build (track x) (status x) = x
+class (Monoid track, Ord track) => Track track where
+    data Status track :: * -> *
+    combine :: track -> track -> track
+    track   :: Status track status -> track
+    status  :: Status track status -> status
+    build   :: track -> status -> Status track status
+
+instance (Track a, Show a, Show b) => Show (Status a b) where
+    show x = show (status x) ++ ": " ++ show (track x)
+instance (Eq b, Track a) => Eq (Status a b) where
+    x == y = track x == track y && status x == status y
+instance (Ord b, Track a) => Ord (Status a b) where
+    compare x y = compare (status x) (status y) <> compare (track x) (track y)
+instance Track a => Functor (Status a) where
+    fmap f x = build (track x) (f $ status x)
+instance Track a => Applicative (Status a) where
+    pure x = build mempty x
+    f <*> x = build (track f <> track x) (status f $ status x)
+instance Track a => Semigroup (Status a b) where
+    x <> y = build (combine (track x) (track y)) (status x)
+
+data MCon a = MCon a deriving Eq
+instance Show a => Show (MCon a) where
+    show (MCon a) = show a
+instance Ord a => Ord (MCon a) where
+    compare (MCon a) (MCon b) = compare a b
+instance Semigroup (MCon String) where
+    MCon x <> MCon y = MCon (x <> y)
+instance Monoid (MCon String) where
+    mempty = MCon mempty
+
+instance Track (MCon String) where
+    data Status (MCon String) a = Status {alpha :: MCon String, beta :: a}
+    combine x _ = x
+    track = alpha
+    status = beta
+    build = Status
+
+newtype TestWalk = TestWalk Int deriving (Enum, Eq, Ord, Show)
+
+instance Markov1 (MCon String) TestWalk where
+    newtransition _ = [ build (MCon "r") succ
+                      , build (MCon "l") pred ]
