@@ -34,9 +34,9 @@ module Markov where
 
 import Control.Applicative
 import Data.Semigroup
+import qualified Control.Monad.Random as MR
 import qualified Data.List as DL
 import qualified Data.List.NonEmpty as NE
-import qualified Control.Monad.Random as MR
 
 ---------------------------------------------------------------
 -- Markov0
@@ -70,8 +70,7 @@ class Applicative f => Markov f m where
     -- order can be arbitrary though.
     chain      :: (Ord (f m), Semigroup (f m)) => [f m] -> [[f m]]
     step x = fmap (x <**>) (transition x)
-    chain  = DL.iterate' $ map sconcat . gather . concatMap step
-        where gather = NE.group . DL.sort
+    chain  = DL.iterate' $ map sconcat . NE.group . DL.sort . concatMap step
 
 ---------------------------------------------------------------
 -- MProd
@@ -171,101 +170,3 @@ instance Applicative MNull where
 
 instance Eq a => Semigroup (MNull a) where
     (<>) x _ = x
-
----------------------------------------------------------------
--- DProd
----------------------------------------------------------------
-
-class DProd a b where
-    data Prod a b :: *
-    projl :: Prod a b -> a
-    projr :: Prod a b -> b
-    dprod :: a -> b -> Prod a b
-
-instance (DProd a b, Show a, Show b) => Show (Prod a b) where
-    show x = "(" ++ show (projl x) ++ ", " ++ show (projr x) ++ ")"
-instance (DProd a b, Eq a, Eq b) => Eq (Prod a b) where
-    x == y = projl x == projl y && projr x == projr y
-instance (DProd a b, Semigroup a, Semigroup b) => Semigroup (Prod a b) where
-    x <> y = dprod (projl x <> projl y) (projr x <> projr y)
-instance (DProd a b, Monoid a, Monoid b) => Monoid (Prod a b) where
-    mempty = dprod mempty mempty
-
----------------------------------------------------------------
--- Track
----------------------------------------------------------------
-
--- @combine@ should be commutative and associative, and:
--- |prop> combine x x == x
--- |prop> build (track x) (status x) = x
-class (Monoid track, Ord track) => Track track where
-    data Status track :: * -> *
-    combine :: track -> track -> track
-    track   :: Status track status -> track
-    status  :: Status track status -> status
-    build   :: track -> status -> Status track status
-
-instance (Track a, Show a, Show b) => Show (Status a b) where
-    show x = show (status x) ++ ": " ++ show (track x)
-instance (Eq b, Track a) => Eq (Status a b) where
-    x == y = track x == track y && status x == status y
-instance (Ord b, Track a) => Ord (Status a b) where
-    compare x y = compare (status x) (status y) <> compare (track x) (track y)
-instance Track a => Functor (Status a) where
-    fmap f x = build (track x) (f $ status x)
-instance Track a => Applicative (Status a) where
-    pure x = build mempty x
-    f <*> x = build (track f <> track x) (status f $ status x)
-instance Track a => Semigroup (Status a b) where
-    x <> y = build (combine (track x) (track y)) (status x)
-
--- |An implementation of markov chains.
--- Instances of Markov should follow the laws:
---
--- prop> x <> x == x
-class (Track t, Ord m) => Markov1 t m where
-    transition1 :: m -> [Status t (m -> m)]
-    step1       :: Status t m -> [Status t m]
-    chain1      :: [Status t m] -> [[Status t m]]
-    step1 x = fmap (x <**>) (transition1 $ status x)
-    chain1  = DL.iterate' $ map sconcat . NE.group . DL.sort . concatMap step1
-
----------------------------------------------------------------
--- Track -- MCon
----------------------------------------------------------------
-
-data MCon a = MCon a deriving Eq
-instance Show a => Show (MCon a) where
-    show (MCon a) = show a
-instance Ord a => Ord (MCon a) where
-    compare (MCon a) (MCon b) = compare a b
-instance Semigroup (MCon String) where
-    MCon x <> MCon y = MCon (x <> y)
-instance Monoid (MCon String) where
-    mempty = MCon mempty
-
-instance Track (MCon String) where
-    data Status (MCon String) a = Status {alpha :: MCon String, beta :: a}
-    combine x _ = x
-    track = alpha
-    status = beta
-    build = Status
-
----------------------------------------------------------------
--- Track -- MProd1
----------------------------------------------------------------
-
-data MProd1 a = MProd1 a
-instance Show a => Show (MProd1 a) where
-    show (MProd1 a) = show a
-instance Num a => Semigroup (MProd1 a) where
-    MProd1 x <> MProd1 y = MProd1 (x * y)
-instance Num a => Monoid (MProd1 a) where
-    mempty = MProd1 1
-
--- instance Num a => Track (MProd1 a) where
-    -- data Status (MProd1 a) b = Status1 {alpha1 :: MProd1 a, beta1 :: b}
-    -- combine x _ = x
-    -- track = alpha
-    -- status = beta
-    -- build = Status
