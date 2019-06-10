@@ -42,6 +42,8 @@ class (Grouping (Status t m), Track t) => MarkovGeneric t m where
     genchain      :: [Status t m] -> [[Status t m]]
     genstep x = fmap (x <**>) (gentransition $ status x)
     genchain  = DL.iterate' $ map (sconcat . NE.fromList) . DD.group . concatMap genstep
+    -- WRONG since DD.group ignores equivalence class
+    -- Use groupWith and map to void for trivial groupings?
 
 ---------------------------------------------------------------
 -- DProd
@@ -74,9 +76,24 @@ instance (Track a, Track b) => Track (Prod a b) where
 -- Track
 ---------------------------------------------------------------
 
--- @combine@ should be commutative and associative, and:
+-- @combine@ should be associative, commutative, and,
+-- up to equivalence, idempotent. Given
+--
+-- > data Status (Type a) b = T { alpha :: Type a
+-- >                            , beta :: b }
+--
+-- we should have
+--
+-- > build = T
+-- > track = alpha
+-- > status = beta
+--
+-- I.e. the following laws hould hold:
+--
+-- |prop> (x `combine y) `combine` z = x `combine` (y `combine z)
+-- |prop> combine x y = combine y x
 -- |prop> combine x x == x
--- |prop> build (track x) (status x) = x
+-- |prop> x = build (track x) (status x)
 class (Eq track, Monoid track) => Track track where
     data Status track :: * -> *
     combine :: track -> track -> track
@@ -97,7 +114,7 @@ instance Track a => Semigroup (Status a b) where
     x <> y = build (combine (track x) (track y)) (status x)
 
 ---------------------------------------------------------------
--- Track -- NoCombine
+-- NoCombine
 ---------------------------------------------------------------
 
 data NoCombine a = NoCombine a deriving (Eq, Generic, Grouping)
@@ -204,6 +221,11 @@ instance MarkovGeneric (Prod (NoCombine String) (MProd Int)) TestWalk where
 short3 = dprod (NoCombine "") (MProd 1 :: MProd Int)
 short4 = build short3 (TestWalk 5)
 
+instance MarkovGeneric (MProd Int) TestWalk where
+    gentransition _ = [ build (MProd 1) pred
+                      , build (MProd 1) succ ]
+short5 = MProd 1 :: MProd Int
+short6 = build short5 (TestWalk 0)
 {-
 ---------------------------------------------------------------
 -- Track -- DProd NoCombine MProd
