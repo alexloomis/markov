@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, TypeFamilies, FlexibleInstances,
-GeneralizedNewtypeDeriving #-}
+GeneralizedNewtypeDeriving, DeriveGeneric, DeriveAnyClass #-}
 {-|
 Module      : Experimental
 Description : Analysis of Markov processes with known parameters.
@@ -29,44 +29,42 @@ import Control.Applicative
 import Data.Semigroup
 import qualified Data.List as DL
 import qualified Data.List.NonEmpty as NE
+import Generics.Deriving as GD
+import Data.Discrimination as DD
 
 ---------------------------------------------------------------
 -- Markov
 ---------------------------------------------------------------
 
--- |An implementation of markov chains.
--- Instances of Markov should follow the laws:
---
--- prop> x <> x == x
-class (Track t, Ord m) => Markov t m where
-    transition :: m -> [Status t (m -> m)]
-    step       :: Status t m -> [Status t m]
-    chain      :: [Status t m] -> [[Status t m]]
-    step x = fmap (x <**>) (transition $ status x)
-    chain  = DL.iterate' $ map sconcat . NE.group . DL.sort . concatMap step
+class (Grouping (Status t m), Track t) => MarkovGeneric t m where
+    gentransition :: m -> [Status t (m -> m)]
+    genstep       :: Status t m -> [Status t m]
+    genchain      :: [Status t m] -> [[Status t m]]
+    genstep x = fmap (x <**>) (gentransition $ status x)
+    genchain  = DL.iterate' $ map (sconcat . NE.fromList) . DD.group . concatMap genstep
 
 ---------------------------------------------------------------
 -- DProd
 ---------------------------------------------------------------
 
-class DProd a b where
-    data Prod a b :: *
-    projl :: Prod a b -> a
-    projr :: Prod a b -> b
-    dprod :: a -> b -> Prod a b
+data Prod a b = Prod {projl :: a, projr :: b} deriving (Generic, Grouping)
+dprod :: a -> b -> Prod a b
+dprod = Prod
 
-instance (DProd a b, Show a, Show b) => Show (Prod a b) where
+instance (Show a, Show b) => Show (Prod a b) where
     show x = "(" ++ show (projl x) ++ ", " ++ show (projr x) ++ ")"
-instance (DProd a b, Eq a, Eq b) => Eq (Prod a b) where
+instance (Eq a, Eq b) => Eq (Prod a b) where
     x == y = projl x == projl y && projr x == projr y
-instance (DProd a b, Ord a, Ord b) => Ord (Prod a b) where
+instance (Ord a, Ord b) => Ord (Prod a b) where
     compare x y = compare (projl x) (projl y) <> compare (projr x) (projr y)
-instance (DProd a b, Semigroup a, Semigroup b) => Semigroup (Prod a b) where
+instance (Semigroup a, Semigroup b) => Semigroup (Prod a b) where
     x <> y = dprod (projl x <> projl y) (projr x <> projr y)
-instance (DProd a b, Monoid a, Monoid b) => Monoid (Prod a b) where
+instance (Monoid a, Monoid b) => Monoid (Prod a b) where
     mempty = dprod mempty mempty
-instance (DProd a b, Track a, Track b) => Track (Prod a b) where
-    data Status (Prod a b) c = Status0 {alpha0 :: Prod a b, beta0 :: c}
+instance (Track a, Track b) => Track (Prod a b) where
+    data Status (Prod a b) c = Status0 { alpha0 :: Prod a b
+                                       , beta0 :: c }
+                                       deriving (Generic, Grouping)
     combine x y = dprod (combine (projl x) (projl y)) (combine (projr x) (projr y))
     track = alpha0
     status = beta0
@@ -79,7 +77,7 @@ instance (DProd a b, Track a, Track b) => Track (Prod a b) where
 -- @combine@ should be commutative and associative, and:
 -- |prop> combine x x == x
 -- |prop> build (track x) (status x) = x
-class (Ord track, Monoid track) => Track track where
+class (Eq track, Monoid track) => Track track where
     data Status track :: * -> *
     combine :: track -> track -> track
     track   :: Status track status -> track
@@ -90,8 +88,6 @@ instance (Track a, Show a, Show b) => Show (Status a b) where
     show x = show (status x) ++ ": " ++ show (track x)
 instance (Eq b, Track a) => Eq (Status a b) where
     x == y = track x == track y && status x == status y
-instance (Ord b, Track a) => Ord (Status a b) where
-    compare x y = compare (status x) (status y) <> compare (track x) (track y)
 instance Track a => Functor (Status a) where
     fmap f x = build (track x) (f $ status x)
 instance Track a => Applicative (Status a) where
@@ -101,31 +97,55 @@ instance Track a => Semigroup (Status a b) where
     x <> y = build (combine (track x) (track y)) (status x)
 
 ---------------------------------------------------------------
--- Track -- MCon
+-- Track -- NoCombine
 ---------------------------------------------------------------
 
-data MCon a = MCon a deriving Eq
-instance Show a => Show (MCon a) where
-    show (MCon a) = show a
-instance Ord a => Ord (MCon a) where
-    compare (MCon a) (MCon b) = compare a b
-instance Semigroup (MCon String) where
-    MCon x <> MCon y = MCon (x <> y)
-instance Monoid (MCon String) where
-    mempty = MCon mempty
+data NoCombine a = NoCombine a deriving (Eq, Generic, Grouping)
+instance Show a => Show (NoCombine a) where
+    show (NoCombine a) = show a
+instance Semigroup a => Semigroup (NoCombine a) where
+    NoCombine x <> NoCombine y = NoCombine (x <> y)
+instance Monoid a => Monoid (NoCombine a) where
+    mempty = NoCombine mempty
 
-instance Track (MCon String) where
-    data Status (MCon String) a = Status1 {alpha1 :: MCon String, beta1 :: a}
+instance (Eq a, Monoid a) => Track (NoCombine a) where
+    data Status (NoCombine a) b = Status1 { alpha1 :: NoCombine a
+                                          , beta1 :: b }
+                                          deriving (Generic, Grouping)
     combine x _ = x
     track = alpha1
     status = beta1
     build = Status1
 
 ---------------------------------------------------------------
--- Track -- MProd
+-- Track -- Combine
 ---------------------------------------------------------------
 
-data MSum a = MSum a deriving (Eq, Ord)
+data Combine a = Combine a deriving (Generic, Grouping)
+instance Show a => Show (Combine a) where
+    show (Combine a) = show a
+instance Eq (Combine a) where
+    _ == _ = True
+instance Semigroup a => Semigroup (Combine a) where
+    Combine x <> Combine y = Combine (x <> y)
+instance Monoid a => Monoid (Combine a) where
+    mempty = Combine mempty
+
+instance Monoid a => Track (Combine a) where
+    data Status (Combine a) b = Status7 { alpha7 :: Combine a
+                                        , beta7 :: b }
+                                        deriving (Generic, Grouping)
+    combine x y = x <> y
+    track = alpha7
+    status = beta7
+    build = Status7
+
+
+---------------------------------------------------------------
+-- Track -- MSum
+---------------------------------------------------------------
+
+data MSum a = MSum a deriving (Eq, Generic, Grouping)
 instance Show a => Show (MSum a) where
     show (MSum a) = show a
 instance Num a => Semigroup (MSum a) where
@@ -133,22 +153,23 @@ instance Num a => Semigroup (MSum a) where
 instance Num a => Monoid (MSum a) where
     mempty = MSum 0
 
-instance (Num a, Ord a) => Track (MSum a) where
-    data Status (MSum a) b = Status4 {alpha4 :: MSum a, beta4 :: b}
+instance (Eq a, Num a) => Track (MSum a) where
+    data Status (MSum a) b = Status4 { alpha4 :: MSum a
+                                     , beta4 :: b }
+                                     deriving (Generic, Grouping)
     combine x _ = x
     track = alpha4
     status = beta4
     build = Status4
 
+
 ---------------------------------------------------------------
 -- Track -- MProd
 ---------------------------------------------------------------
 
-data MProd a = MProd a
+data MProd a = MProd a deriving (Generic, Grouping)
 instance Eq (MProd a) where
     _ == _ = True
-instance Ord (MProd a) where
-    compare _ _ = EQ
 instance Show a => Show (MProd a) where
     show (MProd a) = show a
 instance Num a => Semigroup (MProd a) where
@@ -157,37 +178,59 @@ instance Num a => Monoid (MProd a) where
     mempty = MProd 1
 
 instance Num a => Track (MProd a) where
-    data Status (MProd a) b = Status2 {alpha2 :: MProd a, beta2 :: b}
+    data Status (MProd a) b = Status2 { alpha2 :: MProd a
+                                      , beta2 :: b }
+                                      deriving (Generic, Grouping)
     combine (MProd x) (MProd y) = MProd (x + y)
     track = alpha2
     status = beta2
     build = Status2
 
 ---------------------------------------------------------------
--- Track -- DProd MCon MProd
+-- Test
 ---------------------------------------------------------------
 
-instance DProd (MCon String) (MProd Double) where
-    data Prod (MCon String) (MProd Double) = Prod3 {alpha3 :: MCon String, beta3 :: MProd Double}
-    projl = alpha3
-    projr = beta3
-    dprod = Prod3
+newtype TestWalk = TestWalk Int deriving (Enum, Eq, Generic, Grouping, Ord, Show)
+
+instance MarkovGeneric (MSum Int) TestWalk where
+    gentransition _ = [ build (MSum (-1)) pred
+                      , build (MSum 0) succ ]
+short1 = MSum 0 :: MSum Int
+short2 = build short1 (TestWalk 0)
+
+instance MarkovGeneric (Prod (NoCombine String) (MProd Int)) TestWalk where
+    gentransition _ = [ build (dprod (NoCombine "l") (MProd 1)) pred
+                      , build (dprod (NoCombine "r") (MProd 1)) succ ]
+short3 = dprod (NoCombine "") (MProd 1 :: MProd Int)
+short4 = build short3 (TestWalk 5)
+
+{-
+---------------------------------------------------------------
+-- Track -- DProd NoCombine MProd
+---------------------------------------------------------------
+
+-- instance DProd (NoCombine String) (MProd Double) where
+    -- data Prod (NoCombine String) (MProd Double) = Prod3 {alpha3 :: NoCombine String, beta3 :: MProd Double}
+    -- projl = alpha3
+    -- projr = beta3
+    -- dprod = Prod3
 
 newtype TestWalk = TestWalk Int deriving (Enum, Eq, Ord, Show)
-instance Markov (Prod (MCon String) (MProd Double)) TestWalk where
-    transition _ = [ build (dprod (MCon "l") (MProd 0.5)) pred
-                   , build (dprod (MCon "r") (MProd 0.5)) succ ]
-short1 = dprod (MCon "") (MProd 1 :: MProd Double)
-short2 = build short1 (TestWalk 5)
+-- instance Markov (Prod (NoCombine String) (MProd Double)) TestWalk where
+    -- transition _ = [ build (dprod (NoCombine "l") (MProd 0.5)) pred
+                   -- , build (dprod (NoCombine "r") (MProd 0.5)) succ ]
+-- short1 = dprod (NoCombine "") (MProd 1 :: MProd Double)
+-- short2 = build short1 (TestWalk 5)
 
-instance DProd (MSum Int) (MProd Double) where
-    data Prod (MSum Int) (MProd Double) = Prod5 {alpha5 :: MSum Int, beta5 :: MProd Double}
-    projl = alpha5
-    projr = beta5
-    dprod = Prod5
+-- instance DProd (MSum Int) (MProd Double) where
+    -- data Prod (MSum Int) (MProd Double) = Prod5 {alpha5 :: MSum Int, beta5 :: MProd Double}
+    -- projl = alpha5
+    -- projr = beta5
+    -- dprod = Prod5
 
 instance Markov (Prod (MSum Int) (MProd Double)) TestWalk where
     transition _ = [ build (dprod (MSum 1) (MProd 0.5)) pred
                    , build (dprod (MSum 0) (MProd 0.5)) succ ]
 short3 = dprod (MSum 0 :: MSum Int) (MProd 1 :: MProd Double)
 short4 = build short3 (TestWalk 5)
+-}
