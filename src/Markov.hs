@@ -56,6 +56,9 @@ class (Eq m) => Markov0 m where
 -- Markov
 ---------------------------------------------------------------------------------------
 
+-- |An implementation of Markov chains.
+-- To speed up @chain@, try replacing @groupWith f@
+-- in the definition with @group . sort@.
 class (Combine t, Grouping t, Grouping m, Monoid t) => Markov t m where
     transition :: m -> [(t, m -> m)]
     step       :: (t,m) -> [(t,m)]
@@ -83,8 +86,9 @@ instance Grouping Double where grouping = FC.contramap GF.castDoubleToWord64 gro
 -- |Within equivalence classes, @combine@ should be associative,
 -- commutative, and should be idempotent up to equivalence.
 -- Quotient should map equivalence classes to representatives.
--- I.e.  if x == y == z,
--- prop> (x `combine y) `combine` z = x `combine` (y `combine` z)
+-- I.e.  if @x == y == z@,
+--
+-- prop> (x `combine` y) `combine` z = x `combine` (y `combine` z)
 -- prop> x `combine` y = y `combine` x
 -- prop> x `combine` x == x
 -- prop> quotient x = quotient y
@@ -92,7 +96,6 @@ class Combine a where
     combine  :: a -> a -> a
     summarize :: NE.NonEmpty a -> a
     quotient :: a -> a
-    combine _ = id
     summarize (a NE.:| b) = foldl combine a b
     quotient = id
     -- Figure out how to do quotient :: Grouping b => a -> b
@@ -109,8 +112,14 @@ instance (Combine a, Combine b, Combine c) => Combine (a,b,c) where
 -- Easier way to write nested 2-tuples
 ---------------------------------------------------------------------------------------
 
--- |Easier way to write nested 2-tuples
+-- |Easier way to write nested 2-tuples.
 type a :* b = (a,b)
+-- |Easier way to write nested 2-tuples,
+-- since @a >*\< b >*\< c >*< d@
+-- is much easier to read than
+-- @(((a,b),c),d)@.
+-- Left associative, binds weaker than @+@
+-- but stronger than @==@.
 (>*<) :: a -> b -> a :* b
 a >*< b = (a,b)
 infixl 5 >*<
@@ -146,6 +155,8 @@ deriving newtype instance Enum a => Enum (Product a)
 instance Grouping a => Grouping (Product a)
 deriving newtype instance Fractional a => Fractional (Product a)
 
+-- |Does not effect equality of tuple,
+-- @combine x y = x + y@.
 newtype Prod a = Prod {getProd :: Product a}
     deriving Generic
     deriving newtype (Num, Fractional, Semigroup, Monoid, Enum, Show)

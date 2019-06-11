@@ -196,8 +196,6 @@ instance Show FillBin where
     show (Ext g b s) = show g ++ " " ++ show b ++ " " ++ show s
     show (End g) = show g
 
-instance Combine FillBin
-
 instance Markov (Prod Double) FillBin where
     transition x = case probId x of
         0 -> filter (\(Prod y,_) -> y /= 0)
