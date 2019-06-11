@@ -1,5 +1,5 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts,
-GeneralizedNewtypeDeriving, FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, DeriveGeneric, DeriveAnyClass,
+DerivingStrategies, GeneralizedNewtypeDeriving, FlexibleInstances, TypeOperators #-}
 {-|
 Module      : Examples
 Description : Examples of Markov chains implemented using "Markov".
@@ -11,7 +11,6 @@ Several examples of Markov chains, implemented with 'Markov'.
 module Examples ( Simple (..)
                 , Urn (..)
                 , Extinction (..)
-                , State (..)
                 , Tidal (..)
                 , FillBin
                 , initial
@@ -19,6 +18,9 @@ module Examples ( Simple (..)
                 ) where
 
 import Markov
+import Generics.Deriving
+import Data.Discrimination
+import Data.Monoid
 
 ---------------------------------------------------------------
 -- From a matrix
@@ -30,12 +32,12 @@ import Markov
 -- [MProd {prod = 0.50609756097561, pstate = 'a'}
 -- ,MProd {prod = 0.2926829268292684, pstate = 'l'}
 -- ,MProd {prod = 0.20121951219512202, pstate = 't'}]
-instance Markov (MProd Double) Char where
-    transition = let mat = [ [0.4, 0.3, 0.3]
-                           , [0.2, 0.1, 0.7]
-                           , [0.9, 0.1, 0.0] ]
-                     chars = ['a','t','l']
-                 in fromLists mat chars
+-- instance Markov (MProd Double) Char where
+    -- transition = let mat = [ [0.4, 0.3, 0.3]
+                           -- , [0.2, 0.1, 0.7]
+                           -- , [0.9, 0.1, 0.0] ]
+                     -- chars = ['a','t','l']
+                 -- in fromLists mat chars
     
 ---------------------------------------------------------------
 -- Simple random walk
@@ -75,19 +77,26 @@ instance Markov (MProd Double) Char where
 -- , MSum {total = 1, mstate = Simple 0}
 -- , MSum {total = 2, mstate = Simple (-2)} ]
 
-newtype Simple = Simple Int deriving (Enum, Eq, Ord, Show)
+newtype Simple = Simple Int
+    deriving Generic
+    deriving newtype (Enum, Eq, Ord, Show)
+    deriving anyclass Grouping
+
 instance Markov0 Simple where
     transition0 _ = [pred, succ]
-instance Markov (MProd Int) Simple where
-    transition _ = [ MProd 1 pred
-                   , MProd 1 succ ]
-instance Markov (MProd Double) Simple where
-    transition _ = [ MProd 0.5 pred
-                   , MProd 0.5 succ ]
-instance Markov (MSum Int) Simple where
-    transition _ = [ MSum 1 pred
-                   , MSum 0 id
-                   , MSum 0 succ ]
+
+instance Markov (Prod Int) Simple where
+    transition _ = [ 1 >*< pred
+                   , 1 >*< succ ]
+
+instance Markov (Prod Double) Simple where
+    transition _ = [ 0.5 >*< pred
+                   , 0.5 >*< succ ]
+
+instance Markov (Sum Int) Simple where
+    transition _ = [ 1 >*< pred
+                   , 0 >*< id
+                   , 0 >*< succ ]
 
 ---------------------------------------------------------------
 -- Urn model
@@ -96,13 +105,22 @@ instance Markov (MSum Int) Simple where
 -- |An urn contains balls of two colors.
 -- At each step, a ball is chosen uniformly at random from the urn
 -- and a ball of the same color is added.
-newtype Urn = Urn (Int,Int) deriving (Eq, Ord, Show)
-instance Markov (MProd Double) Urn where
-    transition (MProd _ x) = [ MProd (probLeft x)     addLeft
-                             , MProd (1 - probLeft x) addRight]
+newtype Urn = Urn (Int,Int)
+    deriving Generic
+    deriving newtype (Eq, Ord, Show)
+    deriving anyclass Grouping
 
+instance Markov (Prod Double) Urn where
+    transition x = [ probLeft x >*< addLeft
+                   , 1 - probLeft x >*< addRight ]
+
+addLeft :: Urn -> Urn
 addLeft  (Urn (a,b)) = Urn (a+1,b)
+
+addRight :: Urn -> Urn
 addRight (Urn (a,b)) = Urn (a,b+1)
+
+probLeft :: Fractional a => Urn -> a
 probLeft (Urn (a,b)) = (fromIntegral a)/(fromIntegral $ a + b)
 
 ---------------------------------------------------------------
@@ -110,44 +128,18 @@ probLeft (Urn (a,b)) = (fromIntegral a)/(fromIntegral $ a + b)
 ---------------------------------------------------------------
 
 -- |This is the chain from the README.
-data Extinction a = Extinction { death :: Int
-                               , prob  :: Rational
-                               , state :: a }
-                               deriving Show
+newtype Extinction = Extinction Int
+    deriving Generic
+    deriving newtype (Eq, Num, Ord, Show)
+    deriving anyclass Grouping
 
-instance Eq a => Eq (Extinction a) where
-    x == y = state x == state y && death x == death y
-
-instance Semigroup (Extinction a) where
-    x <> y = Extinction { death = death x -- death x == death y
-                        , prob  = prob x + prob y
-                        , state = state x -- state x == state y
-                        }
-
-instance (Ord a) => Ord (Extinction a) where
-    compare x y = compare (state x) (state y)
-                  `mappend`
-                  compare (death x) (death y)
-
-instance Functor Extinction where
-    fmap f (Extinction d p s) = Extinction d p (f s)
-
-instance Applicative Extinction where
-    pure x = Extinction 0 1 x
-    x <*> y = Extinction { death = death x + death y
-                         , prob  = prob  x * prob  y
-                         , state = state x $ state y }
-
--- |This is the chain from the README.
-newtype State = State Int deriving (Eq, Num, Ord, Show)
-
-instance Markov Extinction State where
-    transition x = case state x of
-        State 0 -> [ Extinction 0 (q+r) id
-                   , Extinction 0 s (+1) ]
-        _       -> [ Extinction 1 q (\_ -> 0)
-                   , Extinction 0 r id
-                   , Extinction 0 s (+1) ]
+instance Markov (Sum Int :* Prod Double) Extinction where
+    transition x = case x of
+        Extinction 0 -> [ 0 >*< (q+r) >*< id
+                   , 0 >*< s >*< (+1) ]
+        _       -> [ 1 >*< q >*< (\_ -> 0)
+                   , 0 >*< r >*< id
+                   , 0 >*< s >*< (+1) ]
         where q = 0.1; r = 0.3; s = 0.6
 
 ---------------------------------------------------------------
@@ -159,10 +151,12 @@ instance Markov Extinction State where
 -- and falling back from a shore at the origin.
 data Tidal = Tidal { time     :: Double
                    , position :: Int }
-                   deriving (Eq, Ord, Show)
-instance Markov (MProd Double) Tidal where
-    transition (MProd _ tw) = [ MProd (probRight tw) $ stepPos (+1)
-                              , MProd (1 - (probRight tw)) $ stepPos (flip (-) 1) ]
+                   deriving (Eq, Ord, Show, Generic)
+                   deriving anyclass Grouping
+
+instance Markov (Prod Double) Tidal where
+    transition tw = [ Prod (Product (probRight tw)) >*< stepPos (+1)
+                    , Prod (Product (1 - (probRight tw))) >*< stepPos (flip (-) 1) ]
 
 stepPos :: (Int -> Int) -> Tidal -> Tidal
 stepPos f tw = Tidal (time tw + 1) (f $ position tw)
@@ -196,17 +190,21 @@ type Trans = FillBin -> FillBin
 -- If it is in a gap, it is assigned to an adjacent bin,
 -- which expands to contain it and any intervening spaces,
 -- and then the space filled.
-data FillBin = End Gap | Ext Gap Bin FillBin deriving (Eq, Ord)
+data FillBin = End Gap | Ext Gap Bin FillBin deriving (Eq, Ord, Generic, Grouping)
+
 instance Show FillBin where
     show (Ext g b s) = show g ++ " " ++ show b ++ " " ++ show s
     show (End g) = show g
-instance Markov (MProd Double) FillBin where
-    transition (MProd _ x) = case probId x of
-        0 -> filter (\(MProd y _) -> y /= 0)
-            $  [MProd (probAdd i x) (addItem i) | i <- indices]
-            ++ [MProd (probGrowL i x) (addItem i . growLeft  j i)
+
+instance Combine FillBin
+
+instance Markov (Prod Double) FillBin where
+    transition x = case probId x of
+        0 -> filter (\(Prod y,_) -> y /= 0)
+            $  [(Prod (probAdd i x), (addItem i)) | i <- indices]
+            ++ [(Prod (probGrowL i x), (addItem i . growLeft  j i))
                 | i <- indices, j <- [1..gapN (i-1) x]]
-            ++ [MProd (probGrowR i x) (addItem i . growRight j i)
+            ++ [(Prod (probGrowR i x), (addItem i . growRight j i))
                 | i <- indices, j <- [1..gapN i x]]
         1 -> [pure id]
         _ -> error "Pattern not matched in transition"
@@ -269,7 +267,7 @@ gapN i x = (getGap x)!!i
 -- |The command @iApply i f s@ is analagous to
 -- @take i s ++ f (drop i s)@.
 iApply :: Trans -> Index -> Trans
-iApply f index x = case (index,x) of
+iApply f idx x = case (idx,x) of
     (1, y) -> f y
     (i, Ext g b s) -> Ext g b $ iApply f (i-1) s
     _ -> error "Pattern not matched in iApply"
@@ -337,8 +335,8 @@ individualLoss x = sum . map f . getFull $ x
     where f y = (fromIntegral y - ideal)^2
           ideal = sum (getFull x) `divInt` size x
 
-probLoss :: Fractional a => MProd a FillBin -> a
-probLoss x = prod x * (individualLoss $ pstate x)
+probLoss :: Fractional a => (Prod a, FillBin) -> a
+probLoss (Prod x, y) = getProduct x * individualLoss y
 
 -- |Expected loss of a set of pstates of @['FillBin']@.
 -- Loss is the \(l^2\) distance between a finished state
@@ -346,6 +344,6 @@ probLoss x = prod x * (individualLoss $ pstate x)
 --
 -- >>> expectedLoss [MProd (1.0 :: Double) $ initial [1,0,3]]
 -- 2.0
-expectedLoss :: (Fractional a, Eq a, Markov (MProd a) FillBin) => [MProd a FillBin] -> a
-expectedLoss xs = sum . map probLoss $ (chain xs) !! index
-    where index = slots . pstate . head $ xs
+expectedLoss :: (Fractional a, Markov (Prod a) FillBin) => [(Prod a, FillBin)] -> a
+expectedLoss xs = sum . map probLoss $ (chain xs) !! idx
+    where idx = slots . snd . head $ xs
