@@ -8,19 +8,20 @@ Stability   : experimental
 
 Several examples of Markov chains, implemented with 'Markov'.
 -}
-module Examples ( Simple (..)
-                , Urn (..)
-                , Extinction (..)
-                , Tidal (..)
-                , FillBin
-                , initial
-                , expectedLoss
-                ) where
+module Markov.Examples ( FromMatrix (..)
+                       , Simple (..)
+                       , Urn (..)
+                       , Extinction (..)
+                       , Tidal (..)
+                       , Room (..)
+                       , FillBin
+                       , initial
+                       , expectedLoss
+                       ) where
 
 import Markov
-import Generics.Deriving
-import Data.Discrimination
-import Data.Monoid
+import Generics.Deriving (Generic)
+import Data.Discrimination (Grouping)
 
 ---------------------------------------------------------------
 -- From a matrix
@@ -28,16 +29,21 @@ import Data.Monoid
 
 -- |An example defined from a matrix.
 --
--- >>> chain [pure 't' :: MProd Double Char] !! 100
--- [MProd {prod = 0.50609756097561, pstate = 'a'}
--- ,MProd {prod = 0.2926829268292684, pstate = 'l'}
--- ,MProd {prod = 0.20121951219512202, pstate = 't'}]
--- instance Markov (MProd Double) Char where
-    -- transition = let mat = [ [0.4, 0.3, 0.3]
-                           -- , [0.2, 0.1, 0.7]
-                           -- , [0.9, 0.1, 0.0] ]
-                     -- chars = ['a','t','l']
-                 -- in fromLists mat chars
+-- >>> chain [pure 't' :: Product Double :* Char] !! 100
+-- [ (0.5060975609756099,'a')
+-- , (0.201219512195122,'t')
+-- , (0.29268292682926833,'l') ]
+newtype FromMatrix = FromMatrix Char
+    deriving Generic
+    deriving newtype (Eq, Show)
+    deriving anyclass Grouping
+
+instance Markov (Product Double) FromMatrix where
+    transition = let mat = [ [0.4, 0.3, 0.3]
+                           , [0.2, 0.1, 0.7]
+                           , [0.9, 0.1, 0.0] ]
+                     chars = map FromMatrix ['a','t','l']
+                 in fromLists mat chars
     
 ---------------------------------------------------------------
 -- Simple random walk
@@ -47,56 +53,59 @@ import Data.Monoid
 -- Possible outcomes of the first three steps:
 --
 -- >>> take 3 $ chain0 [Simple 0]
--- [[Simple 0]
--- ,[Simple (-1),Simple 1]
--- ,[Simple (-2),Simple 0,Simple 2]]
+-- [ [0]
+-- , [-1,1]
+-- , [-2,0,2]]
 --
 -- Probability of each outcome:
 --
--- >>> take 3 $ chain [pure $ Simple 0 :: MProd Double Simple]
--- [[MProd {prod = 1.0, pstate = Simple 0}]
--- ,[MProd {prod = 0.5, pstate = Simple (-1)},MProd {prod = 0.5, pstate = Simple 1}]
--- ,[MProd {prod = 0.25, pstate = Simple (-2)},MProd {prod = 0.5, pstate = Simple 0},MProd {prod = 0.25, pstate = Simple 2}]]
+-- >>> take 3 $ chain [pure 0 :: Product Double :* Simple]
+-- [ [(1.0,0)]
+-- , [(0.5,-1),(0.5,1)]
+-- , [(0.25,-2),(0.5,0),(0.25,2)] ]
 --
 -- Number of ways to achieve each outcome:
 --
--- >>> take 3 $ chain [pure $ Simple 0 :: MProd Int Simple]
--- [[MProd {prod = 1, pstate = Simple 0}]
--- ,[MProd {prod = 1, pstate = Simple (-1)},MProd {prod = 1, pstate = Simple 1}]
--- ,[MProd {prod = 1, pstate = Simple (-2)},MProd {prod = 2, pstate = Simple 0},MProd {prod = 1, pstate = Simple 2}]]
+-- >>> take 3 $ chain [pure 0 :: Product Int :* Simple]
+-- [ [(1,0)]
+-- , [(1,-1),(1,1)]
+-- , [(1,-2),(2,0),(1,2)] ]
 --
 -- Number of times @pred@ was applied,
 -- allowing steps in place (@id@)
 -- for more interesting output:
 --
--- >>> chain [pure $ Simple 0 :: MSum Int Simple] !! 2
--- [ MSum {total = 0, mstate = Simple 0}
--- , MSum {total = 0, mstate = Simple 1}
--- , MSum {total = 0, mstate = Simple 2}
--- , MSum {total = 1, mstate = Simple (-1)}
--- , MSum {total = 1, mstate = Simple 0}
--- , MSum {total = 2, mstate = Simple (-2)} ]
+-- >>> chain [pure 0 :: Sum Int :* Simple] !! 2
+-- [ (2,-2)
+-- , (1,-1)
+-- , (1,0)
+-- , (0,0)
+-- , (0,1)
+-- , (0,2) ]
 
 newtype Simple = Simple Int
     deriving Generic
-    deriving newtype (Enum, Eq, Ord, Show)
+    deriving newtype (Num, Enum, Eq, Ord, Show)
     deriving anyclass Grouping
 
 instance Markov0 Simple where
     transition0 _ = [pred, succ]
 
-instance Markov (Prod Int) Simple where
-    transition _ = [ 1 >*< pred
-                   , 1 >*< succ ]
-
-instance Markov (Prod Double) Simple where
+instance Markov (Product Double) Simple where
     transition _ = [ 0.5 >*< pred
                    , 0.5 >*< succ ]
+
+instance Markov (Product Int) Simple where
+    transition _ = [ 1 >*< pred
+                   , 1 >*< succ ]
 
 instance Markov (Sum Int) Simple where
     transition _ = [ 1 >*< pred
                    , 0 >*< id
                    , 0 >*< succ ]
+              -- = [ 1 >*< pred
+              --   , pure id
+              --   , pure succ ]
 
 ---------------------------------------------------------------
 -- Urn model
@@ -110,7 +119,7 @@ newtype Urn = Urn (Int,Int)
     deriving newtype (Eq, Ord, Show)
     deriving anyclass Grouping
 
-instance Markov (Prod Double) Urn where
+instance Markov (Product Double) Urn where
     transition x = [ probLeft x >*< addLeft
                    , 1 - probLeft x >*< addRight ]
 
@@ -133,13 +142,13 @@ newtype Extinction = Extinction Int
     deriving newtype (Eq, Num, Ord, Show)
     deriving anyclass Grouping
 
-instance Markov (Sum Int :* Prod Double) Extinction where
+instance Markov (Sum Int :* Product Double) Extinction where
     transition x = case x of
         Extinction 0 -> [ 0 >*< (q+r) >*< id
-                   , 0 >*< s >*< (+1) ]
-        _       -> [ 1 >*< q >*< (\_ -> 0)
-                   , 0 >*< r >*< id
-                   , 0 >*< s >*< (+1) ]
+                        , 0 >*< s >*< (+1) ]
+        _            -> [ 1 >*< q >*< (\_ -> 0)
+                        , 0 >*< r >*< id
+                        , 0 >*< s >*< (+1) ]
         where q = 0.1; r = 0.3; s = 0.6
 
 ---------------------------------------------------------------
@@ -154,21 +163,67 @@ data Tidal = Tidal { time     :: Double
                    deriving (Eq, Ord, Show, Generic)
                    deriving anyclass Grouping
 
-instance Markov (Prod Double) Tidal where
-    transition tw = [ Prod (Product (probRight tw)) >*< stepPos (+1)
-                    , Prod (Product (1 - (probRight tw))) >*< stepPos (flip (-) 1) ]
+instance Markov (Product Double) Tidal where
+    transition tw = [ probRight tw >*< stepPos (+1)
+                    , 1 - (probRight tw) >*< stepPos (flip (-) 1) ]
 
 stepPos :: (Int -> Int) -> Tidal -> Tidal
 stepPos f tw = Tidal (time tw + 1) (f $ position tw)
 
-probRight :: Tidal -> Double
-probRight tw = timeBias * positionBias
+probRight :: Tidal -> Product Double
+probRight tw = Product $ timeBias * positionBias
     where timeBias = (1 + sin (2 * pi * (time tw) / stepsPerCycle))/2
           positionBias
               | position tw >= 0 = 1 / steepness
               | otherwise       = 1
           stepsPerCycle = 10
           steepness     = 1.3 -- Double from 1 (flat) to +infty
+
+---------------------------------------------------------------
+-- Hidden Markov Model
+---------------------------------------------------------------
+
+-- |A hidden Markov model.
+-- Ugly for the time being, but possible.
+--
+-- >>>  filter (\((_,Merge (_:xs)),_) -> xs == "ab") $ chain [0.3 >*< Merge "" >*< 1, 0.3 >*< Merge "" >*< 2, 0.4 >*< Merge "" >*< 3 :: Product Double :* Merge String :* Room] !! 3
+-- [ ((1.3127699999999999e-2,"aab"),Room 1)
+-- , ((2.6255399999999998e-2,"aab"),Room 2)
+-- , ((4.40655e-2,"aab"),Room 3)
+-- , ((1.5556499999999997e-2,"bab"),Room 1)
+-- , ((3.1112999999999995e-2,"bab"),Room 2)
+-- , ((5.9377499999999986e-2,"bab"),Room 3)
+-- , ((2.6328000000000002e-3,"cab"),Room 1)
+-- , ((5.2656000000000005e-3,"cab"),Room 2)
+-- , ((6.611999999999999e-3,"cab"),Room 3) ]
+--
+-- Given that the last two tokens recieved were @"ab"@,
+-- there is a probability of @0.5394694273697833@
+-- that the current room is @Room 3@.
+newtype Room = Room Int
+    deriving (Generic, Show)
+    deriving newtype (Eq, Num)
+    deriving anyclass Grouping
+
+instance Markov (Product Double :* Merge String) Room where
+    transition 1 = [ 0.15 >*< Merge "a" >*< id
+                   , 0.15 >*< Merge "b" >*< id
+                   , 0.3  >*< Merge "a" >*< \_ -> 2
+                   , 0.3  >*< Merge "b" >*< \_ -> 2
+                   , 0.05 >*< Merge "a" >*< \_ -> 3
+                   , 0.05 >*< Merge "b" >*< \_ -> 3 ]
+    transition 2 = [ 0.3  >*< Merge "a" >*< \_ -> 3
+                   , 0.7  >*< Merge "b" >*< \_ -> 3 ]
+    transition 3 = [ 0.12 >*< Merge "a" >*< \_ -> 1
+                   , 0.12 >*< Merge "b" >*< \_ -> 1
+                   , 0.06 >*< Merge "c" >*< \_ -> 1
+                   , 0.24 >*< Merge "a" >*< \_ -> 2
+                   , 0.24 >*< Merge "b" >*< \_ -> 2
+                   , 0.12 >*< Merge "c" >*< \_ -> 2
+                   , 0.04 >*< Merge "a" >*< id
+                   , 0.04 >*< Merge "a" >*< id
+                   , 0.02 >*< Merge "c" >*< id ]
+    transition _ = error "State out of bounds in Room"
 
 ---------------------------------------------------------------
 -- Yet more complex example
@@ -196,13 +251,13 @@ instance Show FillBin where
     show (Ext g b s) = show g ++ " " ++ show b ++ " " ++ show s
     show (End g) = show g
 
-instance Markov (Prod Double) FillBin where
+instance Markov (Product Double) FillBin where
     transition x = case probId x of
-        0 -> filter (\(Prod y,_) -> y /= 0)
-            $  [(Prod (probAdd i x), (addItem i)) | i <- indices]
-            ++ [(Prod (probGrowL i x), (addItem i . growLeft  j i))
+        0 -> filter (\(Product y,_) -> y /= 0) -- Careful, Product _ == Product _ = True
+            $  [probAdd i x >*< addItem i | i <- indices]
+            ++ [probGrowL i x >*< addItem i . growLeft  j i
                 | i <- indices, j <- [1..gapN (i-1) x]]
-            ++ [(Prod (probGrowR i x), (addItem i . growRight j i))
+            ++ [probGrowR i x >*< addItem i . growRight j i
                 | i <- indices, j <- [1..gapN i x]]
         1 -> [pure id]
         _ -> error "Pattern not matched in transition"
@@ -333,15 +388,15 @@ individualLoss x = sum . map f . getFull $ x
     where f y = (fromIntegral y - ideal)^2
           ideal = sum (getFull x) `divInt` size x
 
-probLoss :: Fractional a => (Prod a, FillBin) -> a
-probLoss (Prod x, y) = getProduct x * individualLoss y
+probLoss :: Fractional a => (Product a, FillBin) -> a
+probLoss (Product x, y) = x * individualLoss y
 
 -- |Expected loss of a set of pstates of @['FillBin']@.
 -- Loss is the \(l^2\) distance between a finished state
 -- and a state with perfectly balanced bins.
 --
--- >>> expectedLoss [MProd (1.0 :: Double) $ initial [1,0,3]]
+-- >>> expectedLoss [pure $ initial [1,0,3] :: Product Double :* FillBin]
 -- 2.0
-expectedLoss :: (Fractional a, Markov (Prod a) FillBin) => [(Prod a, FillBin)] -> a
+expectedLoss :: (Fractional a, Markov (Product a) FillBin) => [Product a :* FillBin] -> a
 expectedLoss xs = sum . map probLoss $ (chain xs) !! idx
     where idx = slots . snd . head $ xs

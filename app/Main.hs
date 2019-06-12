@@ -1,9 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
 
+import Markov.Examples
 -- import Markov
-import Examples
-import Markov
 import Math.Combinatorics.Exact.Binomial (choose)
 import Options.Applicative
 import Data.Semigroup ((<>))
@@ -43,7 +42,7 @@ readable :: Show a => [a] -> IO ()
 readable = putStrLn . intercalate "\n" . fmap show
 
 initials n b =  map f
-    where f x = (Prod (1/(fromIntegral $ n `choose` b)), initial x)
+    where f x = (1/(fromIntegral $ n `choose` b), initial x)
 
 -- FillBins corresponding to partitions created by picking b items from n items.
 partitions :: Int -> Int -> [[Int]]
