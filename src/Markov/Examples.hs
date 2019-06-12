@@ -6,7 +6,8 @@ Description : Examples of Markov chains implemented using "Markov".
 Maintainer  : atloomis@math.arizona.edu
 Stability   : experimental
 
-Several examples of Markov chains, implemented with 'Markov'.
+Several examples of Markov chains.
+It is probably more helpful to read the source code than the Haddock documentation.
 -}
 module Markov.Examples ( FromMatrix (..)
                        , Simple (..)

@@ -2,14 +2,16 @@
 DeriveAnyClass, DerivingStrategies, TypeOperators #-}
 {-|
 Module      : Markov
-Description : Analysis of Markov processes with known parameters.
+Description : Realization of Markov processes with known parameters.
 Maintainer  : atloomis@math.arizona.edu
 Stability   : experimental
 
-Two type classes for deterministically analyzing
+Three type classes for deterministically analyzing
 Markov chains with known parameters.
-'Markov0' is intended to list possible outcomes.
-'Markov' should allow for more sophisticated analysis.
+'Markov0' is intended to list possible outcomes,
+'Markov' should allow for more sophisticated analysis,
+and 'MultiMarkov' is intended to make implementing
+hidden Markov models easier.
 See "Examples" for examples.
 See README for a detailed description.
 -}
@@ -19,6 +21,8 @@ module Markov (
               -- *Markov
               , Markov (..)
               -- *MultiMarkov
+              , randomProduct
+              , randomPath
               , MultiMarkov (..)
               -- *Combine
               , Combine (..)
@@ -29,8 +33,6 @@ module Markov (
               , (:*)
               , (>*<)
               , fromLists
-              , randomProduct
-              , randomPath
               -- *Testing
               ) where
 
