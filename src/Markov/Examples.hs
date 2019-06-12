@@ -139,16 +139,16 @@ probLeft (Urn (a,b)) = (fromIntegral a)/(fromIntegral $ a + b)
 -- |This is the chain from the README.
 newtype Extinction = Extinction Int
     deriving Generic
-    deriving newtype (Eq, Num, Ord, Show)
+    deriving newtype (Eq, Num, Show)
     deriving anyclass Grouping
 
-instance Markov (Sum Int :* Product Double) Extinction where
+instance Markov (Sum Int, Product Rational) Extinction where
     transition x = case x of
-        Extinction 0 -> [ 0 >*< (q+r) >*< id
-                        , 0 >*< s >*< (+1) ]
-        _            -> [ 1 >*< q >*< (\_ -> 0)
-                        , 0 >*< r >*< id
-                        , 0 >*< s >*< (+1) ]
+        0 -> [ 0 >*< (q+r) >*< id
+             , 0 >*< s >*< (+1) ]
+        _ -> [ 1 >*< q >*< const 0
+             , 0 >*< r >*< id
+             , 0 >*< s >*< (+1) ]
         where q = 0.1; r = 0.3; s = 0.6
 
 ---------------------------------------------------------------
@@ -208,18 +208,18 @@ newtype Room = Room Int
 instance Markov (Product Double :* Merge String) Room where
     transition 1 = [ 0.15 >*< Merge "a" >*< id
                    , 0.15 >*< Merge "b" >*< id
-                   , 0.3  >*< Merge "a" >*< \_ -> 2
-                   , 0.3  >*< Merge "b" >*< \_ -> 2
-                   , 0.05 >*< Merge "a" >*< \_ -> 3
-                   , 0.05 >*< Merge "b" >*< \_ -> 3 ]
-    transition 2 = [ 0.3  >*< Merge "a" >*< \_ -> 3
-                   , 0.7  >*< Merge "b" >*< \_ -> 3 ]
-    transition 3 = [ 0.12 >*< Merge "a" >*< \_ -> 1
-                   , 0.12 >*< Merge "b" >*< \_ -> 1
-                   , 0.06 >*< Merge "c" >*< \_ -> 1
-                   , 0.24 >*< Merge "a" >*< \_ -> 2
-                   , 0.24 >*< Merge "b" >*< \_ -> 2
-                   , 0.12 >*< Merge "c" >*< \_ -> 2
+                   , 0.3  >*< Merge "a" >*< const 2
+                   , 0.3  >*< Merge "b" >*< const 2
+                   , 0.05 >*< Merge "a" >*< const 3
+                   , 0.05 >*< Merge "b" >*< const 3 ]
+    transition 2 = [ 0.3  >*< Merge "a" >*< const 3
+                   , 0.7  >*< Merge "b" >*< const 3 ]
+    transition 3 = [ 0.12 >*< Merge "a" >*< const 1
+                   , 0.12 >*< Merge "b" >*< const 1
+                   , 0.06 >*< Merge "c" >*< const 1
+                   , 0.24 >*< Merge "a" >*< const 2
+                   , 0.24 >*< Merge "b" >*< const 2
+                   , 0.12 >*< Merge "c" >*< const 2
                    , 0.04 >*< Merge "a" >*< id
                    , 0.04 >*< Merge "a" >*< id
                    , 0.02 >*< Merge "c" >*< id ]

@@ -32,7 +32,7 @@ module Markov (
               -- *Testing
               ) where
 
-import Markov.Instances
+import Markov.Instances ()
 import Control.Applicative ((<**>))
 import Generics.Deriving (Generic)
 import Data.Discrimination (Grouping, grouping)
@@ -118,8 +118,7 @@ infixl 5 >*<
 -- Merge
 ---------------------------------------------------------------------------------------
 
--- Does not combine unless equal,
--- @combine _ = id@.
+-- Does not group to combine unless equal.
 -- |Values from a 'Monoid' which have the respective
 -- binary operation applied each step.
 -- E.g., strings with concatenation.
@@ -129,7 +128,7 @@ newtype Merge a = Merge a
     deriving anyclass Grouping
 
 instance Combine (Merge a) where
-    combine _ = id
+    combine = const
 
 ---------------------------------------------------------------------------------------
 -- Sum
@@ -143,7 +142,7 @@ newtype Sum a = Sum a
     deriving anyclass Grouping
 
 instance Combine (Sum a) where
-    combine _ = id
+    combine = const
 
 instance Num a => Semigroup (Sum a) where
     x <> y = x + y
@@ -165,7 +164,7 @@ newtype Product a = Product a
     deriving newtype (Num, Fractional, Enum, Show)
 
 instance Grouping (Product a) where
-    grouping = FC.contramap (\_ -> ()) grouping
+    grouping = FC.contramap (const ()) grouping
 
 -- This causes Data.List.group to act more like Data.Discrimination.group
 instance Eq (Product a) where
@@ -198,4 +197,4 @@ fromLists :: Eq  b => [[a]] -> [b] -> b -> [(a, b -> b)]
 fromLists matrix states b = case DL.elemIndex b states of
     Nothing -> []
     Just n  -> zip (matrix!!n) toState
-    where toState = map (\x -> (\_ -> x)) states
+    where toState = map const states
