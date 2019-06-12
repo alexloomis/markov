@@ -49,15 +49,17 @@ instance Markov (Sum Int, Product Rational) Extinction where
 
 We can now easily see a list of states, deaths, and the probabilities.
 
-```
-__> chain [pure 0 :: Sum Int :* Product Rational :* Extinction] !! 3__
+<pre>
+<b>
+> chain [pure 0 :: Sum Int :* Product Rational :* Extinction] !! 3
+</b>
 ((0,8 % 125),0)
 ((0,111 % 500),1)
 ((1,51 % 500),0)
 ((0,9 % 25),2)
 ((1,9 % 250),1)
 ((0,27 % 125),3
-```
+</pre>
 
 This means that starting from a state of zero,
 after three time steps there is a 51/500 chance
