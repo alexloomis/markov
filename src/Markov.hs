@@ -18,6 +18,8 @@ module Markov (
                 Markov0 (..)
               -- *Markov
               , Markov (..)
+              -- *MultiMarkov
+              , MultiMarkov (..)
               -- *Combine
               , Combine (..)
               , Merge (..)
@@ -77,6 +79,21 @@ class (Combine t, Grouping t, Grouping m, Monoid t) => Markov t m where
              -- WARNING: DD.group does not currently respect equivalence classes.
 
 ---------------------------------------------------------------------------------------
+-- Multi-Transition Markov
+---------------------------------------------------------------------------------------
+
+-- |An implementation of Markov chains that allows multi-transition steps.
+class (Combine m, Grouping m, Semigroup m) => MultiMarkov m where
+    multiTransition :: m -> [m -> [m]]
+    multiStep       :: m -> [m]
+    multiChain      :: [m] -> [[m]]
+    multiStep x = foldr phi [x] (multiTransition x)
+        where phi f = concatMap (delta f)
+              delta f y = map (y <>) (f y)
+    multiChain  = DL.iterate' $ map (summarize . NE.fromList)
+                  . DD.group . concatMap multiStep
+
+---------------------------------------------------------------------------------------
 -- Combine
 ---------------------------------------------------------------------------------------
 
@@ -90,7 +107,7 @@ class (Combine t, Grouping t, Grouping m, Monoid t) => Markov t m where
 class Combine a where
     combine  :: a -> a -> a
     summarize :: NE.NonEmpty a -> a
-    summarize (a NE.:| b) = foldl combine a b
+    summarize (a NE.:| b) = foldr combine a b
 
 instance (Combine a, Combine b) => Combine (a,b) where
     combine (w,x) (y,z) = (combine w y, combine x z)

@@ -151,6 +151,23 @@ instance Markov (Sum Int, Product Rational) Extinction where
              , 0 >*< s >*< (+1) ]
         where q = 0.1; r = 0.3; s = 0.6
 
+-- This is equivalent to the definition above.
+instance Combine Extinction where
+    combine = const
+
+instance Semigroup Extinction where
+    (<>) = flip const
+
+instance MultiMarkov (Sum Int :* Product Rational :* Extinction) where
+    multiTransition _ = [trans]
+        where trans ((_,_),z) = case z of
+                  0 -> [ 0 >*< (q+r) >*< 0
+                       , 0 >*< s >*< 1 ]
+                  x -> [ 1 >*< q >*< 0
+                       , 0 >*< r >*< x
+                       , 0 >*< s >*< x+1 ]
+                  where q = 0.1; r = 0.3; s = 0.6
+
 ---------------------------------------------------------------
 -- More complex random walk
 ---------------------------------------------------------------
@@ -184,46 +201,48 @@ probRight tw = Product $ timeBias * positionBias
 ---------------------------------------------------------------
 
 -- |A hidden Markov model.
--- Ugly for the time being, but possible.
 --
--- >>>  filter (\((_,Merge (_:xs)),_) -> xs == "ab") $ chain [0.3 >*< Merge "" >*< 1, 0.3 >*< Merge "" >*< 2, 0.4 >*< Merge "" >*< 3 :: Product Double :* Merge String :* Room] !! 3
--- [ ((1.3127699999999999e-2,"aab"),Room 1)
--- , ((2.6255399999999998e-2,"aab"),Room 2)
--- , ((4.40655e-2,"aab"),Room 3)
--- , ((1.5556499999999997e-2,"bab"),Room 1)
--- , ((3.1112999999999995e-2,"bab"),Room 2)
--- , ((5.9377499999999986e-2,"bab"),Room 3)
--- , ((2.6328000000000002e-3,"cab"),Room 1)
--- , ((5.2656000000000005e-3,"cab"),Room 2)
--- , ((6.611999999999999e-3,"cab"),Room 3) ]
+-- >>> filter (\((_,Merge xs),_) -> xs == "aaa") $ multiChain [1 >*< Merge "" >*< 1 :: Product Rational :* Merge String :* Room] !! 3
+-- [ ((3243 % 200000,"aaa"),Room 1)
+-- , ((9729 % 500000,"aaa"),Room 2)
+-- , ((4501 % 250000,"aaa"),Room 3) ]
 --
--- Given that the last two tokens recieved were @"ab"@,
--- there is a probability of @0.5394694273697833@
+-- Given that all three tokens recieved were @"a"@,
+-- there is a probability of approximately @0.34@
 -- that the current room is @Room 3@.
 newtype Room = Room Int
     deriving (Generic, Show)
     deriving newtype (Eq, Num)
     deriving anyclass Grouping
 
-instance Markov (Product Double :* Merge String) Room where
-    transition 1 = [ 0.15 >*< Merge "a" >*< id
-                   , 0.15 >*< Merge "b" >*< id
-                   , 0.3  >*< Merge "a" >*< const 2
-                   , 0.3  >*< Merge "b" >*< const 2
-                   , 0.05 >*< Merge "a" >*< const 3
-                   , 0.05 >*< Merge "b" >*< const 3 ]
-    transition 2 = [ 0.3  >*< Merge "a" >*< const 3
-                   , 0.7  >*< Merge "b" >*< const 3 ]
-    transition 3 = [ 0.12 >*< Merge "a" >*< const 1
-                   , 0.12 >*< Merge "b" >*< const 1
-                   , 0.06 >*< Merge "c" >*< const 1
-                   , 0.24 >*< Merge "a" >*< const 2
-                   , 0.24 >*< Merge "b" >*< const 2
-                   , 0.12 >*< Merge "c" >*< const 2
-                   , 0.04 >*< Merge "a" >*< id
-                   , 0.04 >*< Merge "a" >*< id
-                   , 0.02 >*< Merge "c" >*< id ]
-    transition _ = error "State out of bounds in Room"
+instance Semigroup Room where
+    (<>) = flip const
+
+instance Combine Room where
+    combine = const
+
+-- Note that changeState is applied before giveToken.
+-- In spirit, we have stepj = giveToken . changeState
+instance MultiMarkov (Product Rational :* Merge String :* Room) where
+    multiTransition _ = [giveToken, changeState]
+        where changeState ((_,_),z) = case z of
+                  1 -> [ 0.3 >*< mempty >*< 1
+                       , 0.6 >*< mempty >*< 2
+                       , 0.1 >*< mempty >*< 3 ]
+                  2 -> [ 1.0 >*< mempty >*< 3 ]
+                  3 -> [ 0.3 >*< mempty >*< 1
+                       , 0.6 >*< mempty >*< 2
+                       , 0.1 >*< mempty >*< 3 ]
+                  _ -> error "State out of bounds in transitionk"
+              giveToken ((_,_),z) = case z of
+                  1 -> [ 0.5 >*< Merge "a" >*< 1
+                       , 0.5 >*< Merge "b" >*< 1 ]
+                  2 -> [ 0.3 >*< Merge "a" >*< 2
+                       , 0.7 >*< Merge "b" >*< 2 ]
+                  3 -> [ 0.4 >*< Merge "a" >*< 3
+                       , 0.4 >*< Merge "b" >*< 3
+                       , 0.2 >*< Merge "c" >*< 3 ]
+                  _ -> error "State out of bounds in transitionk"
 
 ---------------------------------------------------------------
 -- Yet more complex example
