@@ -6,8 +6,8 @@ cabal-version: 1.12
 --
 -- hash: b164fe328e9edef0858d48e61b56997280bd4bb2ea6ffe923afb24084a14efe6
 
-name:           markov
-version:        0.1.0.0
+name:           markov-realization
+version:        0.1.0
 description:    Please see the README on GitHub at <https://github.com/alexloomis/markov#markov-tutorial>
 homepage:       https://github.com/alexloomis/markov
 bug-reports:    https://github.com/alexloomis/markov/issues
@@ -20,10 +20,12 @@ build-type:     Simple
 extra-source-files:
     README.md
     ChangeLog.md
+category:       Statistics
+synopsis:       Realizations of Markov chains.
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/markov
+  location: git://github.com/alexloomis/markov.git
 
 library
   exposed-modules:
@@ -31,13 +33,13 @@ library
       Markov.Examples
       Markov.Instances
   other-modules:
-      Paths_markov
+      Paths_markov_realization
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
-    , contravariant
-    , discrimination
-    , generic-deriving
-    , MonadRandom
+      base >=4.7 && < 5
+    , contravariant >=1.5.1 && < 1.6
+    , discrimination >=0.4 && < 0.5
+    , generic-deriving >=1.12.4 && < 1.13
+    , MonadRandom >=0.5.1 && < 0.6
   default-language: Haskell2010

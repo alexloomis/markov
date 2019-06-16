@@ -2,5 +2,5 @@ flags: {}
 packages:
 - .
 extra-deps:
-- discrimination-0.3
+- discrimination-0.4
 resolver: lts-13.24
