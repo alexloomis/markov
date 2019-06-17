@@ -20,9 +20,9 @@ module Markov (
                 Markov0 (..)
               -- *Markov
               , Markov (..)
-              -- *MultiMarkov
               , randomProduct
               , randomPath
+              -- *MultiMarkov
               , MultiMarkov (..)
               -- *Combine
               , Combine (..)
@@ -33,7 +33,6 @@ module Markov (
               , (:*)
               , (>*<)
               , fromLists
-              -- *Testing
               ) where
 
 import Markov.Instances ()
@@ -139,7 +138,8 @@ infixl 5 >*<
 
 -- Does not group to combine unless equal.
 -- |Values from a 'Monoid' which have the respective
--- binary operation applied each step.
+-- binary operation applied each step,
+-- where different values mean states should not be combined.
 -- E.g., strings with concatenation.
 newtype Merge a = Merge a
     deriving (Eq, Generic)
@@ -153,7 +153,8 @@ instance Combine (Merge a) where
 -- Sum
 ---------------------------------------------------------------------------------------
 
--- |Values which are added each step.
+-- |Values which are added each step
+-- where different values mean states should not be combined.
 -- E.g., number of times a red ball is picked from an urn.
 newtype Sum a = Sum a
     deriving Generic
@@ -185,7 +186,7 @@ newtype Product a = Product a
 instance Grouping (Product a) where
     grouping = FC.contramap (const ()) grouping
 
--- This causes Data.List.group to act more like Data.Discrimination.group
+-- |This causes Data.List.group to act more like Data.Discrimination.group
 instance Eq (Product a) where
     _ == _ = True
 

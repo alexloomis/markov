@@ -1,6 +1,6 @@
 # Markov Tutorial
 
-Let X<sub>n</sub> denote the nth state of a Markov chain with state space ℕ.
+Let Xₙ denote the nth state of a Markov chain with state space ℕ.
 For x ≠ 0 define transition probabilities
 
 p(x,0) = q,
@@ -14,7 +14,7 @@ p(x,0) = q+r,
 p(x,x+1) = s.
 Let p(x,y) = 0 in all other cases.
 Suppose we wanted to find
-P\[X<sub>n</sub> = j ∩ d = k],
+P\[Xₙ = j ∩ d = k],
 where d denotes the number of transitions from a positive integer to zero.
 There are three values we need to track —
 extinctions, probability, and state.
@@ -49,17 +49,15 @@ instance Markov (Sum Int, Product Rational) Extinction where
 
 We can now easily see a list of states, deaths, and the probabilities.
 
-<pre>
-<b>
-> chain [pure 0 :: Sum Int :* Product Rational :* Extinction] !! 3
-</b>
-((0,8 % 125),0)
-((0,111 % 500),1)
-((1,51 % 500),0)
-((0,9 % 25),2)
-((1,9 % 250),1)
-((0,27 % 125),3
-</pre>
+__`> chain [pure 0 :: Sum Int :* Product Rational :* Extinction] !! 3`__
+```
+[ ((0,8 % 125),0)
+, ((0,111 % 500),1)
+, ((1,51 % 500),0)
+, ((0,9 % 25),2)
+, ((1,9 % 250),1)
+, ((0,27 % 125),3) ]
+```
 
 This means that starting from a state of zero,
 after three time steps there is a 51/500 chance

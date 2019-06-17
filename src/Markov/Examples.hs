@@ -411,7 +411,7 @@ individualLoss x = sum . map f . getFull $ x
 probLoss :: Fractional a => (Product a, FillBin) -> a
 probLoss (Product x, y) = x * individualLoss y
 
--- |Expected loss of a set of pstates of @['FillBin']@.
+-- |Expected loss of a set of states of @['FillBin']@.
 -- Loss is the \(l^2\) distance between a finished state
 -- and a state with perfectly balanced bins.
 --
