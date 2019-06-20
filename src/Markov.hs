@@ -1,6 +1,10 @@
-{-# LANGUAGE MultiParamTypeClasses, GeneralizedNewtypeDeriving, DeriveGeneric,
-DeriveAnyClass, DerivingStrategies, TypeOperators #-}
-{-|
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE DeriveAnyClass             #-}
+{-# LANGUAGE DerivingStrategies         #-}
+{-# LANGUAGE TypeOperators              #-}
+{- |
 Module      : Markov
 Description : Realization of Markov processes with known parameters.
 Maintainer  : atloomis@math.arizona.edu
@@ -16,34 +20,40 @@ See "Examples" for examples.
 See README for a detailed description.
 -}
 module Markov (
-              -- *Markov0
-                Markov0 (..)
-              -- *Markov
-              , Markov (..)
-              , randomProduct
-              , randomPath
-              -- *MultiMarkov
-              , MultiMarkov (..)
-              -- *Combine
-              , Combine (..)
-              , Merge (..)
-              , Sum (..)
-              , Product (..)
-              -- *Misc
-              , (:*)
-              , (>*<)
-              , fromLists
-              ) where
+     -- *Markov0
+       Markov0 (..)
+
+     -- *Markov
+     , Markov (..)
+     , randomProduct
+     , randomPath
+
+     -- *MultiMarkov
+     , MultiMarkov (..)
+
+     -- *Combine
+     , Combine (..)
+     , Merge (..)
+     , Sum (..)
+     , Product (..)
+
+     -- *Misc
+     , (:*)
+     , (>*<)
+     , fromLists
+     ) where
+
+import Control.Applicative ((<**>))
+import Data.Discrimination (Grouping, grouping)
+import Generics.Deriving (Generic)
 
 import Markov.Instances ()
-import Control.Applicative ((<**>))
-import Generics.Deriving (Generic)
-import Data.Discrimination (Grouping, grouping)
+
+import qualified Control.Monad.Random as MR
 import qualified Data.Discrimination as DD
+import qualified Data.Functor.Contravariant as FC
 import qualified Data.List as DL
 import qualified Data.List.NonEmpty as NE
-import qualified Data.Functor.Contravariant as FC
-import qualified Control.Monad.Random as MR
 
 ---------------------------------------------------------------
 -- Markov0
@@ -51,7 +61,6 @@ import qualified Control.Monad.Random as MR
 
 -- |A basic implementation of Markov chains.
 class (Eq m) => Markov0 m where
-    -- |The transition functions from a state.
     transition0 :: m -> [m -> m]
     step0       :: m -> [m]
     -- |Iterated steps.
@@ -67,32 +76,32 @@ class (Eq m) => Markov0 m where
 -- To speed up @chain@, try instead:
 --
 -- > chain = DL.iterate' $ map summarize' . NE.group . DL.sort . concatMap step
--- >     where summarize' xs@((_,b)NE.:|_) = (summarize . fmap fst $ xs, b)
+-- >   where summarize' xs@((_,b)NE.:|_) = (summarize . fmap fst $ xs, b)
 class (Combine t, Grouping t, Grouping m, Monoid t) => Markov t m where
     transition :: m -> [(t, m -> m)]
     step       :: (t,m) -> [(t,m)]
     chain      :: [(t,m)] -> [[(t,m)]]
     step x = fmap (x <**>) (transition $ snd x)
+    -- WARNING: DD.group does not currently respect equivalence classes.
     -- |Iterated steps, with equal states combined using 'summarize' operation.
-    chain  = DL.iterate' $ map (summarize' . NE.fromList)
-             . DD.group . concatMap step
-             where summarize' xs@((_,b)NE.:|_) = (summarize . fmap fst $ xs, b)
-             -- WARNING: DD.group does not currently respect equivalence classes.
+    chain = DL.iterate' $ map (summarize' . NE.fromList) . DD.group . concatMap step
+      where summarize' xs@((_,b)NE.:|_) = (summarize . fmap fst $ xs, b)
 
 ---------------------------------------------------------------------------------------
 -- Multi-Transition Markov
 ---------------------------------------------------------------------------------------
 
+-- Note that the definition of transition does not guarantee
+-- that chains obey the Markov property.
 -- |An implementation of Markov chains that allows multi-transition steps.
 class (Combine m, Grouping m, Semigroup m) => MultiMarkov m where
     multiTransition :: m -> [m -> [m]]
     multiStep       :: m -> [m]
     multiChain      :: [m] -> [[m]]
     multiStep x = foldr phi [x] (multiTransition x)
-        where phi f = concatMap (delta f)
-              delta f y = map (y <>) (f y)
-    multiChain  = DL.iterate' $ map (summarize . NE.fromList)
-                  . DD.group . concatMap multiStep
+      where phi f = concatMap (delta f)
+            delta f y = map (y <>) (f y)
+    multiChain  = DL.iterate' $ map (summarize . NE.fromList) . DD.group . concatMap multiStep
 
 ---------------------------------------------------------------------------------------
 -- Combine
@@ -146,8 +155,7 @@ newtype Merge a = Merge a
     deriving newtype (Semigroup, Monoid, Enum, Num, Fractional, Show)
     deriving anyclass Grouping
 
-instance Combine (Merge a) where
-    combine = const
+instance Combine (Merge a) where combine = const
 
 ---------------------------------------------------------------------------------------
 -- Sum
@@ -161,14 +169,11 @@ newtype Sum a = Sum a
     deriving newtype (Eq, Enum, Num, Fractional, Show)
     deriving anyclass Grouping
 
-instance Combine (Sum a) where
-    combine = const
+instance Combine (Sum a) where combine = const
 
-instance Num a => Semigroup (Sum a) where
-    x <> y = x + y
+instance Num a => Semigroup (Sum a) where x <> y = x + y
 
-instance Num a => Monoid (Sum a) where
-    mempty = 0
+instance Num a => Monoid (Sum a) where mempty = 0
 
 ---------------------------------------------------------------------------------------
 -- Product
@@ -187,17 +192,13 @@ instance Grouping (Product a) where
     grouping = FC.contramap (const ()) grouping
 
 -- |This causes Data.List.group to act more like Data.Discrimination.group
-instance Eq (Product a) where
-    _ == _ = True
+instance Eq (Product a) where _ == _ = True
 
-instance Num a => Combine (Product a) where
-    combine = (+)
+instance Num a => Combine (Product a) where combine = (+)
 
-instance Num a => Semigroup (Product a) where
-    x <> y = x * y
+instance Num a => Semigroup (Product a) where x <> y = x * y
 
-instance Num a => Monoid (Product a) where
-    mempty = 1
+instance Num a => Monoid (Product a) where mempty = 1
 
 ---------------------------------------------------------------------------------------
 -- Misc
@@ -205,11 +206,11 @@ instance Num a => Monoid (Product a) where
 
 -- |Randomly choose from a list by probability.
 randomProduct :: (Real a, MR.MonadRandom m) => [(a, b)] -> m (a, b)
-randomProduct xs = MR.fromList . map (\x -> (x, toRational $ fst x)) $ xs
+randomProduct = MR.fromList . map (\x -> (x, toRational $ fst x))
 
 -- |Returns a single realization of a Markov chain.
 randomPath :: (Markov a b, Real a, MR.RandomGen g) => (a,b) -> g -> [(a,b)]
-randomPath x g = map (flip MR.evalRand g) . iterate (>>= (randomProduct . step)) $ pure x
+randomPath x g = map (`MR.evalRand` g) . iterate (>>= (randomProduct . step)) $ pure x
 
 -- |Create a transition function from a transition matrix.
 -- If [[a]] is an n x n matrix, length [b] should be n.
@@ -217,4 +218,4 @@ fromLists :: Eq  b => [[a]] -> [b] -> b -> [(a, b -> b)]
 fromLists matrix states b = case DL.elemIndex b states of
     Nothing -> []
     Just n  -> zip (matrix!!n) toState
-    where toState = map const states
+  where toState = map const states

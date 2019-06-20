@@ -1,5 +1,11 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, DeriveGeneric, DeriveAnyClass,
-DerivingStrategies, GeneralizedNewtypeDeriving, FlexibleInstances, TypeOperators #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE DeriveAnyClass             #-}
+{-# LANGUAGE DerivingStrategies         #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE TypeOperators              #-}
 {-|
 Module      : Examples
 Description : Examples of Markov chains implemented using "Markov".
@@ -131,7 +137,7 @@ addRight :: Urn -> Urn
 addRight (Urn (a,b)) = Urn (a,b+1)
 
 probLeft :: Fractional a => Urn -> a
-probLeft (Urn (a,b)) = (fromIntegral a)/(fromIntegral $ a + b)
+probLeft (Urn (a,b)) =  fromIntegral a / fromIntegral (a + b)
 
 ---------------------------------------------------------------
 -- Tutorial
@@ -150,25 +156,23 @@ instance Markov (Sum Int, Product Rational) Extinction where
         _ -> [ 1 >*< q >*< const 0
              , 0 >*< r >*< id
              , 0 >*< s >*< (+1) ]
-        where q = 0.1; r = 0.3; s = 0.6
-
+      where q = 0.1; r = 0.3; s = 0.6
+{-
 -- This is equivalent to the definition above.
-instance Combine Extinction where
-    combine = const
+instance Combine Extinction where combine = const
 
-instance Semigroup Extinction where
-    (<>) = flip const
+instance Semigroup Extinction where (<>) = flip const
 
 instance MultiMarkov (Sum Int :* Product Rational :* Extinction) where
     multiTransition _ = [trans]
-        where trans ((_,_),z) = case z of
-                  0 -> [ 0 >*< (q+r) >*< 0
-                       , 0 >*< s >*< 1 ]
-                  x -> [ 1 >*< q >*< 0
-                       , 0 >*< r >*< x
-                       , 0 >*< s >*< x+1 ]
-                  where q = 0.1; r = 0.3; s = 0.6
-
+      where trans ((_,_),z) = case z of
+                0 -> [ 0 >*< (q+r) >*< 0
+                     , 0 >*< s >*< 1 ]
+                x -> [ 1 >*< q >*< 0
+                     , 0 >*< r >*< x
+                     , 0 >*< s >*< x+1 ]
+              where q = 0.1; r = 0.3; s = 0.6
+-}
 ---------------------------------------------------------------
 -- More complex random walk
 ---------------------------------------------------------------
@@ -183,24 +187,24 @@ data Tidal = Tidal { time     :: Double
 
 instance Markov (Product Double) Tidal where
     transition tw = [ probRight tw >*< stepPos (+1)
-                    , 1 - (probRight tw) >*< stepPos (flip (-) 1) ]
+                    , 1 - probRight tw >*< stepPos (flip (-) 1) ]
 
 stepPos :: (Int -> Int) -> Tidal -> Tidal
 stepPos f tw = Tidal (time tw + 1) (f $ position tw)
 
 probRight :: Tidal -> Product Double
 probRight tw = Product $ timeBias * positionBias
-    where timeBias = (1 + sin (2 * pi * (time tw) / stepsPerCycle))/2
-          positionBias
-              | position tw >= 0 = 1 / steepness
-              | otherwise       = 1
-          stepsPerCycle = 10
-          steepness     = 1.3 -- Double from 1 (flat) to +infty
+  where timeBias = (1 + sin (2 * pi * time tw / stepsPerCycle))/2
+        positionBias
+            | position tw >= 0 = 1 / steepness
+            | otherwise       = 1
+        stepsPerCycle = 10
+        steepness     = 1.3 -- Double from 1 (flat) to +infty
 
 ---------------------------------------------------------------
 -- Hidden Markov Model
 ---------------------------------------------------------------
-
+{-
 -- |A hidden Markov model.
 --
 -- >>> filter (\((_,Merge xs),_) -> xs == "aaa") $ multiChain [1 >*< Merge "" >*< 1 :: Product Rational :* Merge String :* Room] !! 3
@@ -216,35 +220,33 @@ newtype Room = Room Int
     deriving newtype (Eq, Num)
     deriving anyclass Grouping
 
-instance Semigroup Room where
-    (<>) = flip const
+instance Semigroup Room where (<>) = flip const
 
-instance Combine Room where
-    combine = const
+instance Combine Room where combine = const
 
 -- Note that changeState is applied before giveToken.
--- In spirit, we have stepj = giveToken . changeState
+-- In spirit, we have multiStep = giveToken . changeState
 instance MultiMarkov (Product Rational :* Merge String :* Room) where
     multiTransition _ = [giveToken, changeState]
-        where changeState ((_,_),z) = case z of
-                  1 -> [ 0.3 >*< mempty >*< 1
-                       , 0.6 >*< mempty >*< 2
-                       , 0.1 >*< mempty >*< 3 ]
-                  2 -> [ 1.0 >*< mempty >*< 3 ]
-                  3 -> [ 0.3 >*< mempty >*< 1
-                       , 0.6 >*< mempty >*< 2
-                       , 0.1 >*< mempty >*< 3 ]
-                  _ -> error "State out of bounds in transitionk"
-              giveToken ((_,_),z) = case z of
-                  1 -> [ 0.5 >*< Merge "a" >*< 1
-                       , 0.5 >*< Merge "b" >*< 1 ]
-                  2 -> [ 0.3 >*< Merge "a" >*< 2
-                       , 0.7 >*< Merge "b" >*< 2 ]
-                  3 -> [ 0.4 >*< Merge "a" >*< 3
-                       , 0.4 >*< Merge "b" >*< 3
-                       , 0.2 >*< Merge "c" >*< 3 ]
-                  _ -> error "State out of bounds in transitionk"
-
+      where changeState ((_,_),z) = case z of
+                1 -> [ 0.3 >*< mempty >*< 1
+                     , 0.6 >*< mempty >*< 2
+                     , 0.1 >*< mempty >*< 3 ]
+                2 -> [ 1.0 >*< mempty >*< 3 ]
+                3 -> [ 0.3 >*< mempty >*< 1
+                     , 0.6 >*< mempty >*< 2
+                     , 0.1 >*< mempty >*< 3 ]
+                _ -> error "State out of bounds in transitionk"
+            giveToken ((_,_),z) = case z of
+                1 -> [ 0.5 >*< Merge "a" >*< 1
+                     , 0.5 >*< Merge "b" >*< 1 ]
+                2 -> [ 0.3 >*< Merge "a" >*< 2
+                     , 0.7 >*< Merge "b" >*< 2 ]
+                3 -> [ 0.4 >*< Merge "a" >*< 3
+                     , 0.4 >*< Merge "b" >*< 3
+                     , 0.2 >*< Merge "c" >*< 3 ]
+                _ -> error "State out of bounds in transitionk"
+-}
 ---------------------------------------------------------------
 -- Yet more complex example
 ---------------------------------------------------------------
@@ -317,7 +319,7 @@ getOpen x = map fst $ getBins x
 
 -- |The open value of the Nth bin.
 openN :: Index -> FillBin -> Open
-openN i x = (getOpen x)!!(i-1)
+openN i x = getOpen x !!(i-1)
 
 -- |The full values of a state.
 getFull :: FillBin -> [Full]
@@ -325,7 +327,7 @@ getFull x = map snd $ getBins x
 
 -- |The full value of the Nth bin.
 fullN :: Index -> FillBin -> Full
-fullN i x = (getFull x)!!(i-1)
+fullN i x = getFull x !!(i-1)
 
 -- |The gap values of a state.
 getGap :: FillBin -> [Gap]
@@ -335,7 +337,7 @@ getGap x = case x of
 
 -- |Warning! Indexed from zero!
 gapN :: Index -> FillBin -> Gap
-gapN i x = (getGap x)!!i
+gapN i x = getGap x !! i
 
 -- |The command @iApply i f s@ is analagous to
 -- @take i s ++ f (drop i s)@.
@@ -372,12 +374,12 @@ slots x = sum $ getGap x ++ getOpen x
 
 -- |The probability that a state returns to itself.
 probId :: Num a => FillBin -> a
-probId x = case slots x == 0 of
-    True  -> 1
-    False -> 0
+probId x
+    | slots x == 0 = 1
+    | otherwise    = 0
 
 divInt :: (Integral a, Integral b, Fractional c) => a -> b -> c
-divInt x y = (fromIntegral x)/(fromIntegral y)
+divInt x y = fromIntegral x / fromIntegral y
 
 -- |The probability that the ith bin gains an item.
 probAdd :: Fractional a => Index -> FillBin -> a
@@ -385,16 +387,16 @@ probAdd i x = openN i x `divInt` slots x
 
 -- |The probability that the ith bin expands to the left.
 probGrowL :: Fractional a => Index -> FillBin -> a
-probGrowL i x = case test of
-    True  -> 1 `divInt` slots x
-    False -> 0
+probGrowL i x
+    | test      = 1 `divInt` slots x
+    | otherwise = 0
     where test = i == 1 || fullN i x < fullN (i-1) x
 
 -- |The probability that the ith bin expands to the right.
 probGrowR :: Fractional a => Index -> FillBin -> a
-probGrowR i x = case test of
-    True  -> 1 `divInt` slots x
-    False -> 0
+probGrowR i x
+    | test      = 1 `divInt` slots x
+    | otherwise = 0
     where test = i == size x || fullN i x <= fullN (i+1) x
 
 ---------------------------------------------------------------
@@ -418,5 +420,5 @@ probLoss (Product x, y) = x * individualLoss y
 -- >>> expectedLoss [pure $ initial [1,0,3] :: Product Double :* FillBin]
 -- 2.0
 expectedLoss :: (Fractional a, Markov (Product a) FillBin) => [Product a :* FillBin] -> a
-expectedLoss xs = sum . map probLoss $ (chain xs) !! idx
+expectedLoss xs = sum . map probLoss $ chain xs !! idx
     where idx = slots . snd . head $ xs
