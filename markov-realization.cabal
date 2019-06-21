@@ -38,6 +38,7 @@ library
       src
   build-depends:
       base >=4.7 && < 5
+    , configuration-tools
     , contravariant
     , discrimination
     , generic-deriving

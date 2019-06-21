@@ -6,6 +6,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE TypeOperators              #-}
+
 {-|
 Module      : Examples
 Description : Examples of Markov chains implemented using "Markov".
@@ -36,7 +37,7 @@ import Data.Discrimination (Grouping)
 
 -- |An example defined from a matrix.
 --
--- >>> chain [pure 't' :: Product Double :* Char] !! 100
+-- >>> chain [pure (FromMatrix 't') :: (Product Double, FromMatrix)] !! 100
 -- [ (0.5060975609756099,'a')
 -- , (0.201219512195122,'t')
 -- , (0.29268292682926833,'l') ]
@@ -45,13 +46,15 @@ newtype FromMatrix = FromMatrix Char
     deriving newtype (Eq, Show)
     deriving anyclass Grouping
 
-instance Markov (Product Double) FromMatrix where
+instance Combine FromMatrix where combine = const
+
+instance Markov ((,) (Product Double)) FromMatrix where
     transition = let mat = [ [0.4, 0.3, 0.3]
                            , [0.2, 0.1, 0.7]
                            , [0.9, 0.1, 0.0] ]
                      chars = map FromMatrix ['a','t','l']
                  in fromLists mat chars
-    
+
 ---------------------------------------------------------------
 -- Simple random walk
 ---------------------------------------------------------------
@@ -66,14 +69,14 @@ instance Markov (Product Double) FromMatrix where
 --
 -- Probability of each outcome:
 --
--- >>> take 3 $ chain [pure 0 :: Product Double :* Simple]
+-- >>> take 3 $ chain [pure 0 :: (Product Double, Simple)]
 -- [ [(1.0,0)]
 -- , [(0.5,-1),(0.5,1)]
 -- , [(0.25,-2),(0.5,0),(0.25,2)] ]
 --
 -- Number of ways to achieve each outcome:
 --
--- >>> take 3 $ chain [pure 0 :: Product Int :* Simple]
+-- >>> take 3 $ chain [pure 0 :: (Product Int, Simple)]
 -- [ [(1,0)]
 -- , [(1,-1),(1,1)]
 -- , [(1,-2),(2,0),(1,2)] ]
@@ -82,37 +85,31 @@ instance Markov (Product Double) FromMatrix where
 -- allowing steps in place (@id@)
 -- for more interesting output:
 --
--- >>> chain [pure 0 :: Sum Int :* Simple] !! 2
--- [ (2,-2)
--- , (1,-1)
--- , (1,0)
--- , (0,0)
--- , (0,1)
--- , (0,2) ]
+-- >>> chain [pure 0 :: (Sum Int, Simple)] !! 2
+-- [ (2,-2), (1,-1), (1,0), (0,0), (0,1), (0,2) ]
 
 newtype Simple = Simple Int
     deriving Generic
     deriving newtype (Num, Enum, Eq, Ord, Show)
     deriving anyclass Grouping
 
+instance Combine Simple where combine = const
+
 instance Markov0 Simple where
     transition0 _ = [pred, succ]
 
-instance Markov (Product Double) Simple where
-    transition _ = [ 0.5 >*< pred
+instance Markov ((,) (Product Double)) Simple where
+    transition x = [ 0.5 >*< pred
                    , 0.5 >*< succ ]
 
-instance Markov (Product Int) Simple where
-    transition _ = [ 1 >*< pred
+instance Markov ((,) (Product Int)) Simple where
+    transition x = [ 1 >*< pred
                    , 1 >*< succ ]
 
-instance Markov (Sum Int) Simple where
-    transition _ = [ 1 >*< pred
+instance Markov ((,) (Sum Int)) Simple where
+    transition x = [ 1 >*< pred
                    , 0 >*< id
                    , 0 >*< succ ]
-              -- = [ 1 >*< pred
-              --   , pure id
-              --   , pure succ ]
 
 ---------------------------------------------------------------
 -- Urn model
@@ -126,7 +123,9 @@ newtype Urn = Urn (Int,Int)
     deriving newtype (Eq, Ord, Show)
     deriving anyclass Grouping
 
-instance Markov (Product Double) Urn where
+instance Combine Urn where combine = const
+
+instance Markov ((,) (Product Double)) Urn where
     transition x = [ probLeft x >*< addLeft
                    , 1 - probLeft x >*< addRight ]
 
@@ -149,30 +148,17 @@ newtype Extinction = Extinction Int
     deriving newtype (Eq, Num, Show)
     deriving anyclass Grouping
 
-instance Markov (Sum Int, Product Rational) Extinction where
-    transition x = case x of
-        0 -> [ 0 >*< (q+r) >*< id
-             , 0 >*< s >*< (+1) ]
-        _ -> [ 1 >*< q >*< const 0
-             , 0 >*< r >*< id
-             , 0 >*< s >*< (+1) ]
-      where q = 0.1; r = 0.3; s = 0.6
-{-
--- This is equivalent to the definition above.
 instance Combine Extinction where combine = const
 
-instance Semigroup Extinction where (<>) = flip const
+instance Markov ((,) (Sum Int, Product Rational)) Extinction where
+    transition x = case x of
+        0 -> [ 0 >*< (q+r) >*< id
+             , 0 >*< s >*< (+) 1 ]
+        _ -> [ 1 >*< q >*< const 0
+             , 0 >*< r >*< id
+             , 0 >*< s >*< (+) 1 ]
+      where q = 0.1; r = 0.3; s = 0.6
 
-instance MultiMarkov (Sum Int :* Product Rational :* Extinction) where
-    multiTransition _ = [trans]
-      where trans ((_,_),z) = case z of
-                0 -> [ 0 >*< (q+r) >*< 0
-                     , 0 >*< s >*< 1 ]
-                x -> [ 1 >*< q >*< 0
-                     , 0 >*< r >*< x
-                     , 0 >*< s >*< x+1 ]
-              where q = 0.1; r = 0.3; s = 0.6
--}
 ---------------------------------------------------------------
 -- More complex random walk
 ---------------------------------------------------------------
@@ -185,7 +171,9 @@ data Tidal = Tidal { time     :: Double
                    deriving (Eq, Ord, Show, Generic)
                    deriving anyclass Grouping
 
-instance Markov (Product Double) Tidal where
+instance Combine Tidal where combine = const
+
+instance Markov ((,) (Product Double)) Tidal where
     transition tw = [ probRight tw >*< stepPos (+1)
                     , 1 - probRight tw >*< stepPos (flip (-) 1) ]
 
@@ -204,10 +192,10 @@ probRight tw = Product $ timeBias * positionBias
 ---------------------------------------------------------------
 -- Hidden Markov Model
 ---------------------------------------------------------------
-{-
+
 -- |A hidden Markov model.
 --
--- >>> filter (\((_,Merge xs),_) -> xs == "aaa") $ multiChain [1 >*< Merge "" >*< 1 :: Product Rational :* Merge String :* Room] !! 3
+-- >>> filter (\((_,Merge xs),_) -> xs == "aaa") $ chain [1 >*< Merge "" >*< 1 :: Product Rational :* Merge String :* Room] !! 3
 -- [ ((3243 % 200000,"aaa"),Room 1)
 -- , ((9729 % 500000,"aaa"),Room 2)
 -- , ((4501 % 250000,"aaa"),Room 3) ]
@@ -220,33 +208,31 @@ newtype Room = Room Int
     deriving newtype (Eq, Num)
     deriving anyclass Grouping
 
-instance Semigroup Room where (<>) = flip const
-
 instance Combine Room where combine = const
 
 -- Note that changeState is applied before giveToken.
 -- In spirit, we have multiStep = giveToken . changeState
-instance MultiMarkov (Product Rational :* Merge String :* Room) where
-    multiTransition _ = [giveToken, changeState]
-      where changeState ((_,_),z) = case z of
-                1 -> [ 0.3 >*< mempty >*< 1
-                     , 0.6 >*< mempty >*< 2
-                     , 0.1 >*< mempty >*< 3 ]
-                2 -> [ 1.0 >*< mempty >*< 3 ]
-                3 -> [ 0.3 >*< mempty >*< 1
-                     , 0.6 >*< mempty >*< 2
-                     , 0.1 >*< mempty >*< 3 ]
-                _ -> error "State out of bounds in transitionk"
-            giveToken ((_,_),z) = case z of
-                1 -> [ 0.5 >*< Merge "a" >*< 1
-                     , 0.5 >*< Merge "b" >*< 1 ]
-                2 -> [ 0.3 >*< Merge "a" >*< 2
-                     , 0.7 >*< Merge "b" >*< 2 ]
-                3 -> [ 0.4 >*< Merge "a" >*< 3
-                     , 0.4 >*< Merge "b" >*< 3
-                     , 0.2 >*< Merge "c" >*< 3 ]
-                _ -> error "State out of bounds in transitionk"
--}
+instance Markov ((,) (Product Rational, Merge String)) Room where
+    sequential = [giveToken, changeState]
+      where changeState z = case z of
+                1 -> [ 0.3 >*< mempty >*< const 1
+                     , 0.6 >*< mempty >*< const 2
+                     , 0.1 >*< mempty >*< const 3 ]
+                2 -> [ 1.0 >*< mempty >*< const 3 ]
+                3 -> [ 0.3 >*< mempty >*< const 1
+                     , 0.6 >*< mempty >*< const 2
+                     , 0.1 >*< mempty >*< const 3 ]
+                _ -> error "State out of bounds in transition"
+            giveToken z = case z of
+                1 -> [ 0.5 >*< Merge "a" >*< const 1
+                     , 0.5 >*< Merge "b" >*< const 1 ]
+                2 -> [ 0.3 >*< Merge "a" >*< const 2
+                     , 0.7 >*< Merge "b" >*< const 2 ]
+                3 -> [ 0.4 >*< Merge "a" >*< const 3
+                     , 0.4 >*< Merge "b" >*< const 3
+                     , 0.2 >*< Merge "c" >*< const 3 ]
+                _ -> error "State out of bounds in transition"
+
 ---------------------------------------------------------------
 -- Yet more complex example
 ---------------------------------------------------------------
@@ -273,7 +259,10 @@ instance Show FillBin where
     show (Ext g b s) = show g ++ " " ++ show b ++ " " ++ show s
     show (End g) = show g
 
-instance Markov (Product Double) FillBin where
+instance Combine FillBin where
+    combine a _ = a
+
+instance Markov ((,) (Product Double)) FillBin where
     transition x = case probId x of
         0 -> filter (\(Product y,_) -> y /= 0) -- Careful, Product _ == Product _ = True
             $  [probAdd i x >*< addItem i | i <- indices]
@@ -417,8 +406,9 @@ probLoss (Product x, y) = x * individualLoss y
 -- Loss is the \(l^2\) distance between a finished state
 -- and a state with perfectly balanced bins.
 --
--- >>> expectedLoss [pure $ initial [1,0,3] :: Product Double :* FillBin]
+-- >>> expectedLoss [pure $ initial [1,0,3] :: (Product Double, FillBin)]
 -- 2.0
-expectedLoss :: (Fractional a, Markov (Product a) FillBin) => [Product a :* FillBin] -> a
+expectedLoss :: (Fractional a, Markov ((,) (Product a)) FillBin) 
+    => [Product a :* FillBin] -> a
 expectedLoss xs = sum . map probLoss $ chain xs !! idx
     where idx = slots . snd . head $ xs
