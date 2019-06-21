@@ -8,7 +8,7 @@
 {-# LANGUAGE TypeOperators              #-}
 
 {-|
-Module      : Examples
+Module      : Markov.Example
 Description : Examples of Markov chains implemented using "Markov".
 Maintainer  : atloomis@math.arizona.edu
 Stability   : experimental
@@ -16,16 +16,17 @@ Stability   : experimental
 Several examples of Markov chains.
 It is probably more helpful to read the source code than the Haddock documentation.
 -}
-module Markov.Examples ( FromMatrix (..)
-                       , Simple (..)
-                       , Urn (..)
-                       , Extinction (..)
-                       , Tidal (..)
-                       , Room (..)
-                       , FillBin
-                       , initial
-                       , expectedLoss
-                       ) where
+module Markov.Example
+     ( FromMatrix (..)
+     , Simple (..)
+     , Urn (..)
+     , Extinction (..)
+     , Tidal (..)
+     , Room (..)
+     , FillBin
+     , initial
+     , expectedLoss
+     ) where
 
 import Markov
 import Generics.Deriving (Generic)
@@ -65,7 +66,7 @@ instance Markov ((,) (Product Double)) FromMatrix where
 -- >>> take 3 $ chain0 [Simple 0]
 -- [ [0]
 -- , [-1,1]
--- , [-2,0,2]]
+-- , [-2,0,2] ]
 --
 -- Probability of each outcome:
 --
@@ -99,15 +100,15 @@ instance Markov0 Simple where
     transition0 _ = [pred, succ]
 
 instance Markov ((,) (Product Double)) Simple where
-    transition x = [ 0.5 >*< pred
+    transition _ = [ 0.5 >*< pred
                    , 0.5 >*< succ ]
 
 instance Markov ((,) (Product Int)) Simple where
-    transition x = [ 1 >*< pred
+    transition _ = [ 1 >*< pred
                    , 1 >*< succ ]
 
 instance Markov ((,) (Sum Int)) Simple where
-    transition x = [ 1 >*< pred
+    transition _ = [ 1 >*< pred
                    , 0 >*< id
                    , 0 >*< succ ]
 
@@ -195,7 +196,9 @@ probRight tw = Product $ timeBias * positionBias
 
 -- |A hidden Markov model.
 --
--- >>> filter (\((_,Merge xs),_) -> xs == "aaa") $ chain [1 >*< Merge "" >*< 1 :: Product Rational :* Merge String :* Room] !! 3
+-- >>> :{ filter (\((_,Merge xs),_) -> xs == "aaa") $ chain
+--  [1 >*< Merge "" >*< 1 :: Product Rational :* Merge String :* Room] !! 3
+-- :}
 -- [ ((3243 % 200000,"aaa"),Room 1)
 -- , ((9729 % 500000,"aaa"),Room 2)
 -- , ((4501 % 250000,"aaa"),Room 3) ]
@@ -211,7 +214,7 @@ newtype Room = Room Int
 instance Combine Room where combine = const
 
 -- Note that changeState is applied before giveToken.
--- In spirit, we have multiStep = giveToken . changeState
+-- In spirit, we have @transition = giveToken . changeState@
 instance Markov ((,) (Product Rational, Merge String)) Room where
     sequential = [giveToken, changeState]
       where changeState z = case z of
@@ -259,8 +262,7 @@ instance Show FillBin where
     show (Ext g b s) = show g ++ " " ++ show b ++ " " ++ show s
     show (End g) = show g
 
-instance Combine FillBin where
-    combine a _ = a
+instance Combine FillBin where combine = const
 
 instance Markov ((,) (Product Double)) FillBin where
     transition x = case probId x of

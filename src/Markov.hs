@@ -44,14 +44,14 @@ module Markov (
      ) where
 
 import Configuration.Utils.Operators ((<*<))
+import Control.Comonad
 import Data.Discrimination (Grouping, grouping)
 import Generics.Deriving (Generic)
 
-import Markov.Instances ()
+import Markov.Instance ()
 
 import qualified Control.Monad.Random as MR
 import qualified Data.Discrimination as DD
-import qualified Data.Foldable as DF
 import qualified Data.Functor.Contravariant as FC
 import qualified Data.List as DL
 import qualified Data.List.NonEmpty as NE
@@ -77,22 +77,23 @@ chain0 = DL.iterate' $ DL.nub . concatMap step0
 ---------------------------------------------------------------------------------------
 
 -- |An implementation of Markov chains.
---
--- prop> foldMap transition $ pure a = transition a
-class (Applicative t, Foldable t) => Markov t m where
+class (Applicative t, Comonad t) => Markov t m where
     transition :: m -> [t (m -> m)]
     step       :: t m -> [t m]
     sequential :: [m -> [t (m -> m)]]
-    -- transition = fmap (fmap const) . step . pure
-    -- step x = foldr (concatMap . step') [x] sequential
-      -- where step' f x = (<*> x) <$> foldMap f x
-    -- sequential = [transition]
-    step x = (<*> x) <$> foldMap transition x
-    sequential = [fmap (fmap const) . step . pure]
-    transition = foldr phi stayPut sequential
-      where phi g f a = [ x <*< y | y <- f a , x <- foldMap g $ fmap ($ a) y ]
-            stayPut = const [pure id]
+    transition = fmap (fmap const) . step . pure
+    step x = foldr (concatMap . step') [x] sequential
+      where step' f x = (<*> x) <$> f (extract x)
+    sequential = [transition]
     {-# MINIMAL transition | step | sequential #-}
+    -- Could also be defined as follows:
+    --
+    -- transition = foldr compose stayPut sequential
+      -- where stayPut = const [pure id]
+            -- compose g f a = composeWith g a =<< f a
+            -- composeWith g a x = (<*< x) <$> g (extract $ fmap ($ a) x)
+    -- step x = (<*> x) <$> transition (extract x)
+    -- sequential = [fmap (fmap const) . step . pure]
 
 -- WARNING: DD.group does not currently respect equivalence classes.
 -- |Iterated steps, with equal states combined using 'summarize' operation.
@@ -211,7 +212,7 @@ randomPath x g = fmap (`MR.evalRand` g) . iterate (>>= (randomProduct . step)) $
 
 -- |Create a transition function from a transition matrix.
 -- If [[a]] is an n x n matrix, length [b] should be n.
--- fromLists :: Eq  b => [[a]] -> [b] -> b -> [(a, b -> b)]
+fromLists :: Eq  b => [[a]] -> [b] -> b -> [(a, c -> b)]
 fromLists matrix states b = case DL.elemIndex b states of
     Nothing -> []
     Just n  -> zip (matrix!!n) $ fmap const states

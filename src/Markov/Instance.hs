@@ -1,8 +1,7 @@
-module Markov.Instances where
+module Markov.Instance where
 
 import Data.Discrimination (Grouping, grouping)
 import Data.Functor.Contravariant (contramap)
-import Data.Functor.Contravariant.Divisible (conquer)
 import GHC.Float (castFloatToWord32, castDoubleToWord64)
 
 instance Grouping Float where grouping = contramap castFloatToWord32 grouping
