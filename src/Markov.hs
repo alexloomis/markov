@@ -14,9 +14,7 @@ Stability   : experimental
 Three type classes for deterministically analyzing
 Markov chains with known parameters.
 'Markov0' is intended to list possible outcomes,
-'Markov' should allow for more sophisticated analysis,
-and 'MultiMarkov' is intended to make implementing
-hidden Markov models easier.
+'Markov' should allow for more sophisticated analysis.
 See "Examples" for examples.
 See README for a detailed description.
 -}
@@ -28,8 +26,6 @@ module Markov (
      -- *Markov
      , Markov (..)
      , chain
-     , randomProduct
-     , randomPath
 
      -- *Combine
      , Combine (..)
@@ -41,9 +37,11 @@ module Markov (
      , (:*)
      , (>*<)
      , fromLists
+     , randomProduct
+     , randomPath
      ) where
 
-import Configuration.Utils.Operators ((<*<))
+-- import Configuration.Utils.Operators ((<*<))
 import Control.Comonad
 import Data.Discrimination (Grouping, grouping)
 import Generics.Deriving (Generic)
@@ -83,7 +81,7 @@ class (Applicative t, Comonad t) => Markov t m where
     sequential :: [m -> [t (m -> m)]]
     transition = fmap (fmap const) . step . pure
     step x = foldr (concatMap . step') [x] sequential
-      where step' f x = (<*> x) <$> f (extract x)
+      where step' f y = (<*> y) <$> f (extract y)
     sequential = [transition]
     {-# MINIMAL transition | step | sequential #-}
     -- Could also be defined as follows:
@@ -116,6 +114,7 @@ class Combine a where
     summarize :: NE.NonEmpty a -> a
     combine a b = summarize . NE.fromList $ [a,b]
     summarize (a NE.:| b) = foldr combine a b
+    {-# MINIMAL combine | summarize #-}
 
 instance (Combine a, Combine b) => Combine (a,b) where
     combine (w,x) (y,z) = (combine w y, combine x z)
@@ -129,10 +128,7 @@ instance (Combine a, Combine b, Combine c) => Combine (a,b,c) where
 
 -- |Easier way to write nested 2-tuples.
 type a :* b = (a,b)
--- |Easier way to write nested 2-tuples,
--- since @a >*\< b >*\< c >*< d@
--- is much easier to read than
--- @(((a,b),c),d)@.
+-- |Easier way to write nested 2-tuples.
 -- Left associative, binds weaker than @+@
 -- but stronger than @==@.
 (>*<) :: a -> b -> a :* b
@@ -189,7 +185,8 @@ newtype Product a = Product a
 instance Grouping (Product a) where
     grouping = FC.contramap (const ()) grouping
 
--- |This causes Data.List.group to act more like Data.Discrimination.group
+-- This causes Data.List.group to act more like Data.Discrimination.group
+-- |WARNING! Defined @_ == _ = True@!
 instance Eq (Product a) where _ == _ = True
 
 instance Num a => Combine (Product a) where combine = (+)
@@ -211,7 +208,9 @@ randomPath :: (Markov ((,) a) b, Real a, MR.RandomGen g) => (a,b) -> g -> [(a,b)
 randomPath x g = fmap (`MR.evalRand` g) . iterate (>>= (randomProduct . step)) $ pure x
 
 -- |Create a transition function from a transition matrix.
--- If [[a]] is an n x n matrix, length [b] should be n.
+--
+-- prop> all (== length matrix) (map length matrix)
+-- prop> length matrix == length states
 fromLists :: Eq  b => [[a]] -> [b] -> b -> [(a, c -> b)]
 fromLists matrix states b = case DL.elemIndex b states of
     Nothing -> []

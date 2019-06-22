@@ -1,10 +1,11 @@
-{-# LANGUAGE MultiParamTypeClasses      #-}
-{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DerivingStrategies         #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE LambdaCase                 #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE TypeOperators              #-}
 
 {-|
@@ -152,7 +153,7 @@ newtype Extinction = Extinction Int
 instance Combine Extinction where combine = const
 
 instance Markov ((,) (Sum Int, Product Rational)) Extinction where
-    transition x = case x of
+    transition = \case
         0 -> [ 0 >*< (q+r) >*< id
              , 0 >*< s >*< (+) 1 ]
         _ -> [ 1 >*< q >*< const 0
@@ -217,7 +218,7 @@ instance Combine Room where combine = const
 -- In spirit, we have @transition = giveToken . changeState@
 instance Markov ((,) (Product Rational, Merge String)) Room where
     sequential = [giveToken, changeState]
-      where changeState z = case z of
+      where changeState = \case
                 1 -> [ 0.3 >*< mempty >*< const 1
                      , 0.6 >*< mempty >*< const 2
                      , 0.1 >*< mempty >*< const 3 ]
@@ -226,7 +227,7 @@ instance Markov ((,) (Product Rational, Merge String)) Room where
                      , 0.6 >*< mempty >*< const 2
                      , 0.1 >*< mempty >*< const 3 ]
                 _ -> error "State out of bounds in transition"
-            giveToken z = case z of
+            giveToken = \case
                 1 -> [ 0.5 >*< Merge "a" >*< const 1
                      , 0.5 >*< Merge "b" >*< const 1 ]
                 2 -> [ 0.3 >*< Merge "a" >*< const 2
@@ -294,13 +295,13 @@ initial gs = fBFromLists gs $ repeat (0,0)
 
 -- |The number of bins.
 size :: FillBin -> Int
-size x = case x of
+size = \case
     End _ -> 0
     Ext _ _ s -> 1 + size s
 
 -- |The bins of a state.
 getBins :: FillBin -> [Bin]
-getBins x = case x of
+getBins = \case
     End _ -> []
     Ext _ b s -> b:getBins s
 
@@ -322,7 +323,7 @@ fullN i x = getFull x !!(i-1)
 
 -- |The gap values of a state.
 getGap :: FillBin -> [Gap]
-getGap x = case x of
+getGap = \case
     End g -> [g]
     Ext g _ s -> g:getGap s
 
@@ -355,7 +356,7 @@ growRight :: Int -> Index -> Trans
 growRight j = iApply h
     where h (Ext g (o,f) s) = Ext g (o+j,f) (shrink s)
           h _ = error "pattern not matched in h in growRight"
-          shrink s = case s of
+          shrink = \case
               End g -> End (g-j)
               Ext g b t -> Ext (g-j) b t
 
