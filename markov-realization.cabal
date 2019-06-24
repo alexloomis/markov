@@ -7,7 +7,7 @@ cabal-version: 1.12
 -- hash: b164fe328e9edef0858d48e61b56997280bd4bb2ea6ffe923afb24084a14efe6
 
 name:           markov-realization
-version:        0.2.1
+version:        0.3.0
 description:    Please see the README on GitHub at <https://github.com/alexloomis/markov#markov-tutorial>
 homepage:       https://github.com/alexloomis/markov
 bug-reports:    https://github.com/alexloomis/markov/issues
@@ -31,6 +31,7 @@ library
   exposed-modules:
       Markov
       Markov.Example
+      Markov.Extra
       Markov.Instance
   other-modules:
       Paths_markov_realization
@@ -43,6 +44,7 @@ library
     , contravariant
     , discrimination
     , generic-deriving
+    , matrix
     , MonadRandom
   default-language: Haskell2010
 

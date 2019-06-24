@@ -10,12 +10,12 @@ import Markov.Example
 main = htfMain htf_thisModulesTests
 
 -- Examples in the documentation.
-test_fromMatrix =
+test_fromLists =
     assertEqual
-    (chain [pure (FromMatrix 't') :: (Product Double, FromMatrix)] !! 100)
-    [ (0.5060975609756099, FromMatrix 'a')
-    , (0.201219512195122, FromMatrix 't')
-    , (0.29268292682926833, FromMatrix 'l') ]
+    (chain [pure (FromLists 't') :: (Product Double, FromLists)] !! 100)
+    [ (0.5060975609756099, FromLists 'a')
+    , (0.201219512195122, FromLists 't')
+    , (0.29268292682926833, FromLists 'l') ]
 
 test_m0Simple =
     assertEqual

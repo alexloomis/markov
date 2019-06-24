@@ -18,7 +18,7 @@ Several examples of Markov chains.
 It is probably more helpful to read the source code than the Haddock documentation.
 -}
 module Markov.Example
-     ( FromMatrix (..)
+     ( FromLists (..)
      , Simple (..)
      , Urn (..)
      , Extinction (..)
@@ -30,8 +30,10 @@ module Markov.Example
      ) where
 
 import Markov
-import Generics.Deriving (Generic)
+import Markov.Extra
+
 import Data.Discrimination (Grouping)
+import Generics.Deriving (Generic)
 
 ---------------------------------------------------------------
 -- From a matrix
@@ -43,18 +45,18 @@ import Data.Discrimination (Grouping)
 -- [ (0.5060975609756099,'a')
 -- , (0.201219512195122,'t')
 -- , (0.29268292682926833,'l') ]
-newtype FromMatrix = FromMatrix Char
+newtype FromLists = FromLists Char
     deriving Generic
     deriving newtype (Eq, Show)
     deriving anyclass Grouping
 
-instance Combine FromMatrix where combine = const
+instance Combine FromLists where combine = const
 
-instance Markov ((,) (Product Double)) FromMatrix where
+instance Markov ((,) (Product Double)) FromLists where
     transition = let mat = [ [0.4, 0.3, 0.3]
                            , [0.2, 0.1, 0.7]
                            , [0.9, 0.1, 0.0] ]
-                     chars = map FromMatrix ['a','t','l']
+                     chars = map FromLists ['a','t','l']
                  in fromLists mat chars
 
 ---------------------------------------------------------------

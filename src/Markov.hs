@@ -36,19 +36,15 @@ module Markov (
      -- *Misc
      , (:*)
      , (>*<)
-     , fromLists
-     , randomProduct
-     , randomPath
      ) where
 
 -- import Configuration.Utils.Operators ((<*<))
-import Control.Comonad
+import Control.Comonad (Comonad, extract)
 import Data.Discrimination (Grouping, grouping)
 import Generics.Deriving (Generic)
 
 import Markov.Instance ()
 
-import qualified Control.Monad.Random as MR
 import qualified Data.Discrimination as DD
 import qualified Data.Functor.Contravariant as FC
 import qualified Data.List as DL
@@ -97,6 +93,19 @@ class (Applicative t, Comonad t) => Markov t m where
 -- |Iterated steps, with equal states combined using 'summarize' operation.
 chain :: (Combine (t m), Grouping (t m), Markov t m) => [t m] -> [[t m]]
 chain = DL.iterate' $ fmap (summarize . NE.fromList) .  DD.group . concatMap step
+
+{-
+-- |An implementation of Markov chains with non-list containers.
+class (Applicative t, Comonad t, Monad c) => Markov' c t s where
+    transition' :: s -> c (t (s -> s))
+    step'       :: t s -> c (t s)
+    sequential' :: [s -> c (t (s -> s))]
+    transition' = fmap (fmap const) . step' . pure
+    step' x = foldr ((=<<) . step'') (pure x) sequential'
+      where step'' f y = (<*> y) <$> f (extract y)
+    sequential' = pure transition'
+    {-# MINIMAL transition' | step' | sequential' #-}
+-}
 
 ---------------------------------------------------------------------------------------
 -- Combine
@@ -194,24 +203,3 @@ instance Num a => Combine (Product a) where combine = (+)
 instance Num a => Semigroup (Product a) where x <> y = x * y
 
 instance Num a => Monoid (Product a) where mempty = 1
-
----------------------------------------------------------------------------------------
--- Misc
----------------------------------------------------------------------------------------
-
--- |Randomly choose from a list by probability.
-randomProduct :: (Real a, MR.MonadRandom m) => [(a, b)] -> m (a, b)
-randomProduct = MR.fromList . fmap (\x -> (x, toRational $ fst x))
-
--- |Returns a single realization of a Markov chain.
-randomPath :: (Markov ((,) a) b, Real a, MR.RandomGen g) => (a,b) -> g -> [(a,b)]
-randomPath x g = fmap (`MR.evalRand` g) . iterate (>>= (randomProduct . step)) $ pure x
-
--- |Create a transition function from a transition matrix.
---
--- prop> all (== length matrix) (map length matrix)
--- prop> length matrix == length states
-fromLists :: Eq  b => [[a]] -> [b] -> b -> [(a, c -> b)]
-fromLists matrix states b = case DL.elemIndex b states of
-    Nothing -> []
-    Just n  -> zip (matrix!!n) $ fmap const states
