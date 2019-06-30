@@ -28,17 +28,24 @@ we can represent this with `Product Rational`.
 We will make a new type for the state.
 
 ```haskell
-data Extinction = Extinction Int
+newtype Extinction = Extinction Int
     deriving Generic
     deriving newtype (Eq, Num, Show)
     deriving anyclass Grouping
 ```
 
+Combining identical states should not change the state,
+so we make an instance of `Combine` as follows.
+
+```haskell
+instance Combine Extinction where combine = const
+```
+
 All that remains is to make an instance of `Markov`.
 
 ```haskell
-instance Markov (Sum Int, Product Rational) Extinction where
-    transition x = case state x of
+instance Markov ((,) (Sum Int, Product Rational)) Extinction where
+    transition = \case
         0 -> [ 0 >*< (q+r) >*< id
              , 0 >*< s >*< (+1) ]
         _ -> [ 1 >*< q >*< const 0
