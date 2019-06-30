@@ -1,12 +1,15 @@
 {-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE TypeOperators              #-}
 {-|
 Module      : Markov.Extra
 Maintainer  : atloomis@math.arizona.edu
-Stability   : experimental
+Stability   : Experimental
 -}
 module Markov.Extra
      ( fromLists
      , randomPath
+     , (:*)
+     , (>*<)
      ) where
 
 import Markov
@@ -34,3 +37,16 @@ fromLists :: Eq  b => [[a]] -> [b] -> b -> [(a, c -> b)]
 fromLists matrix states b = case DL.elemIndex b states of
     Nothing -> []
     Just n  -> zip (matrix!!n) $ fmap const states
+
+---------------------------------------------------------------------------------------
+-- Easier way to write nested 2-tuples
+---------------------------------------------------------------------------------------
+
+-- |Easier way to write nested 2-tuples.
+type a :* b = (a,b)
+-- |Easier way to write nested 2-tuples.
+-- Left associative, binds weaker than @+@
+-- but stronger than @==@.
+(>*<) :: a -> b -> a :* b
+a >*< b = (a,b)
+infixl 5 >*<

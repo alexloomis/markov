@@ -4,12 +4,11 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
-{-# LANGUAGE TypeOperators              #-}
 {- |
 Module      : Markov
 Description : Realization of Markov processes with known parameters.
 Maintainer  : atloomis@math.arizona.edu
-Stability   : experimental
+Stability   : Experimental
 
 Three type classes for deterministically analyzing
 Markov chains with known parameters.
@@ -32,10 +31,6 @@ module Markov (
      , Merge (..)
      , Sum (..)
      , Product (..)
-
-     -- *Misc
-     , (:*)
-     , (>*<)
      ) where
 
 -- import Configuration.Utils.Operators ((<*<))
@@ -58,11 +53,11 @@ import qualified Data.List.NonEmpty as NE
 class (Eq m) => Markov0 m where
     transition0 :: m -> [m -> m]
     step0       :: m -> [m]
-    -- |Iterated steps.
     transition0 x = const <$> step0 x
     step0 x = ($ x) <$> transition0 x
     {-# MINIMAL transition0 | step0 #-}
 
+-- |Itterated steps, with equal states combined.
 chain0 :: Markov0 m => [m] -> [[m]]
 chain0 = DL.iterate' $ DL.nub . concatMap step0
 
@@ -89,8 +84,9 @@ class (Applicative t, Comonad t) => Markov t m where
     -- step x = (<*> x) <$> transition (extract x)
     -- sequential = [fmap (fmap const) . step . pure]
 
--- WARNING: DD.group does not currently respect equivalence classes.
 -- |Iterated steps, with equal states combined using 'summarize' operation.
+-- WARNING: 'Data.Discrimination.group' does not currently
+-- respect equivalence classes, only 'Grouping'.
 chain :: (Combine (t m), Grouping (t m), Markov t m) => [t m] -> [[t m]]
 chain = DL.iterate' $ fmap (summarize . NE.fromList) .  DD.group . concatMap step
 
@@ -130,19 +126,6 @@ instance (Combine a, Combine b) => Combine (a,b) where
 
 instance (Combine a, Combine b, Combine c) => Combine (a,b,c) where
     combine (a,w,x) (b,y,z) = (combine a b, combine w y, combine x z)
-
----------------------------------------------------------------------------------------
--- Easier way to write nested 2-tuples
----------------------------------------------------------------------------------------
-
--- |Easier way to write nested 2-tuples.
-type a :* b = (a,b)
--- |Easier way to write nested 2-tuples.
--- Left associative, binds weaker than @+@
--- but stronger than @==@.
-(>*<) :: a -> b -> a :* b
-a >*< b = (a,b)
-infixl 5 >*<
 
 ---------------------------------------------------------------------------------------
 -- Merge

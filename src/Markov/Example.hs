@@ -12,7 +12,7 @@
 Module      : Markov.Example
 Description : Examples of Markov chains implemented using "Markov".
 Maintainer  : atloomis@math.arizona.edu
-Stability   : experimental
+Stability   : Experimental
 
 Several examples of Markov chains.
 It is probably more helpful to read the source code than the Haddock documentation.
