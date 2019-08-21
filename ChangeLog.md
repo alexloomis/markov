@@ -1,5 +1,8 @@
 # Changelog for markov
 
+## 0.3.2
+Removed unnecessary dependencies.
+
 ## 0.3.1
 Removed dependency on Data.Discrimination.
 
