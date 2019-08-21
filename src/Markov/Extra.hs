@@ -1,10 +1,12 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE TypeOperators              #-}
+
 {-|
 Module      : Markov.Extra
 Maintainer  : atloomis@math.arizona.edu
 Stability   : Experimental
 -}
+
 module Markov.Extra
      ( fromLists
      , randomPath

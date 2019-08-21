@@ -6,6 +6,7 @@ import Test.Framework
 
 import Markov
 import Markov.Example
+import Markov.Extra
 
 main = htfMain htf_thisModulesTests
 
@@ -14,8 +15,8 @@ test_fromLists =
     assertEqual
     (chain [pure (FromLists 't') :: (Product Double, FromLists)] !! 100)
     [ (0.5060975609756099, FromLists 'a')
-    , (0.201219512195122, FromLists 't')
-    , (0.29268292682926833, FromLists 'l') ]
+    , (0.29268292682926833, FromLists 'l')
+    , (0.201219512195122, FromLists 't') ]
 
 test_m0Simple =
     assertEqual
@@ -41,7 +42,7 @@ test_piSimple =
 test_siSimple =
     assertEqual
     (chain [pure 0 :: (Sum Int, Simple)] !! 2)
-    [ (2,-2), (1,-1), (1,0), (0,0), (0,1), (0,2) ]
+    [ (0,0), (0,1), (0,2), (1,-1), (1,0), (2,-2) ]
 
 test_HMM =
     assertEqual
@@ -55,3 +56,8 @@ test_expLoss =
     assertEqual
     (expectedLoss [pure $ initial [1,0,3] :: (Product Double, FillBin)])
     2
+
+test_expLossMore =
+    assertEqual
+    (expectedLoss [pure $ initial [1,0,3,2,2,5] :: (Product Double, FillBin)])
+    9.764425505050506

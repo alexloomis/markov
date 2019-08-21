@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
@@ -17,6 +16,7 @@ Stability   : Experimental
 Several examples of Markov chains.
 It is probably more helpful to read the source code than the Haddock documentation.
 -}
+
 module Markov.Example
      ( FromLists (..)
      , Simple (..)
@@ -31,9 +31,7 @@ module Markov.Example
 
 import Markov
 import Markov.Extra
-
-import Data.Discrimination (Grouping)
-import Generics.Deriving (Generic)
+import qualified Markov.Generic as MG
 
 ---------------------------------------------------------------
 -- From a matrix
@@ -46,9 +44,7 @@ import Generics.Deriving (Generic)
 -- , (0.201219512195122,'t')
 -- , (0.29268292682926833,'l') ]
 newtype FromLists = FromLists Char
-    deriving Generic
-    deriving newtype (Eq, Show)
-    deriving anyclass Grouping
+    deriving newtype (Eq, Ord, Show)
 
 instance Combine FromLists where combine = const
 
@@ -93,9 +89,7 @@ instance Markov ((,) (Product Double)) FromLists where
 -- [ (2,-2), (1,-1), (1,0), (0,0), (0,1), (0,2) ]
 
 newtype Simple = Simple Int
-    deriving Generic
     deriving newtype (Num, Enum, Eq, Ord, Show)
-    deriving anyclass Grouping
 
 instance Combine Simple where combine = const
 
@@ -123,13 +117,15 @@ instance Markov ((,) (Sum Int)) Simple where
 -- At each step, a ball is chosen uniformly at random from the urn
 -- and a ball of the same color is added.
 newtype Urn = Urn (Int,Int)
-    deriving Generic
     deriving newtype (Eq, Ord, Show)
-    deriving anyclass Grouping
 
 instance Combine Urn where combine = const
 
 instance Markov ((,) (Product Double)) Urn where
+    transition x = [ probLeft x >*< addLeft
+                   , 1 - probLeft x >*< addRight ]
+
+instance MG.Markov [] ((,) (Product Double)) Urn where
     transition x = [ probLeft x >*< addLeft
                    , 1 - probLeft x >*< addRight ]
 
@@ -148,9 +144,7 @@ probLeft (Urn (a,b)) =  fromIntegral a / fromIntegral (a + b)
 
 -- |This is the chain from the README.
 newtype Extinction = Extinction Int
-    deriving Generic
     deriving newtype (Eq, Num, Show)
-    deriving anyclass Grouping
 
 instance Combine Extinction where combine = const
 
@@ -172,8 +166,7 @@ instance Markov ((,) (Sum Int, Product Rational)) Extinction where
 -- and falling back from a shore at the origin.
 data Tidal = Tidal { time     :: Double
                    , position :: Int }
-                   deriving (Eq, Ord, Show, Generic)
-                   deriving anyclass Grouping
+                   deriving (Eq, Ord, Show)
 
 instance Combine Tidal where combine = const
 
@@ -200,8 +193,8 @@ probRight tw = Product $ timeBias * positionBias
 -- |A hidden Markov model.
 --
 -- >>> :{ filter (\((_,Merge xs),_) -> xs == "aaa") $ chain
---  [1 >*< Merge "" >*< 1 :: Product Rational :* Merge String :* Room] !! 3
--- :}
+--        [1 >*< Merge "" >*< 1 :: Product Rational :* Merge String :* Room] !! 3
+--     :}
 -- [ ((3243 % 200000,"aaa"),Room 1)
 -- , ((9729 % 500000,"aaa"),Room 2)
 -- , ((4501 % 250000,"aaa"),Room 3) ]
@@ -210,9 +203,8 @@ probRight tw = Product $ timeBias * positionBias
 -- there is a probability of approximately @0.34@
 -- that the current room is @Room 3@.
 newtype Room = Room Int
-    deriving (Generic, Show)
-    deriving newtype (Eq, Num)
-    deriving anyclass Grouping
+    deriving Show
+    deriving newtype (Eq, Num, Ord)
 
 instance Combine Room where combine = const
 
@@ -259,7 +251,7 @@ type Trans = FillBin -> FillBin
 -- If it is in a gap, it is assigned to an adjacent bin,
 -- which expands to contain it and any intervening spaces,
 -- and then the space filled.
-data FillBin = End Gap | Ext Gap Bin FillBin deriving (Eq, Ord, Generic, Grouping)
+data FillBin = End Gap | Ext Gap Bin FillBin deriving (Eq, Ord)
 
 instance Show FillBin where
     show (Ext g b s) = show g ++ " " ++ show b ++ " " ++ show s
@@ -413,7 +405,7 @@ probLoss (Product x, y) = x * individualLoss y
 --
 -- >>> expectedLoss [pure $ initial [1,0,3] :: (Product Double, FillBin)]
 -- 2.0
-expectedLoss :: (Fractional a, Markov ((,) (Product a)) FillBin) 
+expectedLoss :: (Fractional a, Ord a, Markov ((,) (Product a)) FillBin) 
     => [Product a :* FillBin] -> a
 expectedLoss xs = sum . map probLoss $ chain xs !! idx
     where idx = slots . snd . head $ xs

@@ -1,9 +1,9 @@
-{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
+
 {- |
 Module      : Markov
 Description : Realization of Markov processes with known parameters.
@@ -14,9 +14,12 @@ Three type classes for deterministically analyzing
 Markov chains with known parameters.
 'Markov0' is intended to list possible outcomes,
 'Markov' should allow for more sophisticated analysis.
-See "Examples" for examples.
+A more general definition can be found in "Markov.Generic"
+that allows for containers other than lists.
+See "Markov.Example" for examples.
 See README for a detailed description.
 -}
+
 module Markov (
      -- *Markov0
        Markov0 (..)
@@ -33,15 +36,8 @@ module Markov (
      , Product (..)
      ) where
 
--- import Configuration.Utils.Operators ((<*<))
 import Control.Comonad (Comonad, extract)
-import Data.Discrimination (Grouping, grouping)
-import Generics.Deriving (Generic)
 
-import Markov.Instance ()
-
-import qualified Data.Discrimination as DD
-import qualified Data.Functor.Contravariant as FC
 import qualified Data.List as DL
 import qualified Data.List.NonEmpty as NE
 
@@ -50,15 +46,15 @@ import qualified Data.List.NonEmpty as NE
 ---------------------------------------------------------------
 
 -- |A basic implementation of Markov chains.
-class (Eq m) => Markov0 m where
-    transition0 :: m -> [m -> m]
-    step0       :: m -> [m]
+class (Eq s) => Markov0 s where
+    transition0 :: s -> [s -> s]
+    step0       :: s -> [s]
     transition0 x = const <$> step0 x
     step0 x = ($ x) <$> transition0 x
     {-# MINIMAL transition0 | step0 #-}
 
--- |Itterated steps, with equal states combined.
-chain0 :: Markov0 m => [m] -> [[m]]
+-- |Iterated steps, with equal states combined.
+chain0 :: Markov0 s => [s] -> [[s]]
 chain0 = DL.iterate' $ DL.nub . concatMap step0
 
 ---------------------------------------------------------------------------------------
@@ -66,49 +62,27 @@ chain0 = DL.iterate' $ DL.nub . concatMap step0
 ---------------------------------------------------------------------------------------
 
 -- |An implementation of Markov chains.
-class (Applicative t, Comonad t) => Markov t m where
-    transition :: m -> [t (m -> m)]
-    step       :: t m -> [t m]
-    sequential :: [m -> [t (m -> m)]]
+class (Applicative t, Comonad t) => Markov t s where
+    transition :: s -> [t (s -> s)]
+    step       :: t s -> [t s]
+    sequential :: [s -> [t (s -> s)]]
     transition = fmap (fmap const) . step . pure
     step x = foldr (concatMap . step') [x] sequential
       where step' f y = (<*> y) <$> f (extract y)
     sequential = [transition]
     {-# MINIMAL transition | step | sequential #-}
-    -- Could also be defined as follows:
-    --
-    -- transition = foldr compose stayPut sequential
-      -- where stayPut = const [pure id]
-            -- compose g f a = composeWith g a =<< f a
-            -- composeWith g a x = (<*< x) <$> g (extract $ fmap ($ a) x)
-    -- step x = (<*> x) <$> transition (extract x)
-    -- sequential = [fmap (fmap const) . step . pure]
 
 -- |Iterated steps, with equal states combined using 'summarize' operation.
--- WARNING: 'Data.Discrimination.group' does not currently
--- respect equivalence classes, only 'Grouping'.
-chain :: (Combine (t m), Grouping (t m), Markov t m) => [t m] -> [[t m]]
-chain = DL.iterate' $ fmap (summarize . NE.fromList) .  DD.group . concatMap step
-
-{-
--- |An implementation of Markov chains with non-list containers.
-class (Applicative t, Comonad t, Monad c) => Markov' c t s where
-    transition' :: s -> c (t (s -> s))
-    step'       :: t s -> c (t s)
-    sequential' :: [s -> c (t (s -> s))]
-    transition' = fmap (fmap const) . step' . pure
-    step' x = foldr ((=<<) . step'') (pure x) sequential'
-      where step'' f y = (<*> y) <$> f (extract y)
-    sequential' = pure transition'
-    {-# MINIMAL transition' | step' | sequential' #-}
--}
+chain :: (Combine (t s), Ord (t s), Markov t s) => [t s] -> [[t s]]
+chain = DL.iterate'
+    $ fmap summarize . NE.group . DL.sort . concatMap step
 
 ---------------------------------------------------------------------------------------
 -- Combine
 ---------------------------------------------------------------------------------------
 
 -- |Within equivalence classes, @combine@ should be associative,
--- commutative, and should be idempotent up to equivalence.
+-- commutative, and idempotent (up to equivalence).
 -- I.e.  if @x == y == z@,
 --
 -- prop> (x `combine` y) `combine` z = x `combine` (y `combine` z)
@@ -137,9 +111,7 @@ instance (Combine a, Combine b, Combine c) => Combine (a,b,c) where
 -- where different values mean states should not be combined.
 -- E.g., strings with concatenation.
 newtype Merge a = Merge a
-    deriving (Eq, Generic)
-    deriving newtype (Semigroup, Monoid, Enum, Num, Fractional, Show)
-    deriving anyclass Grouping
+    deriving newtype (Eq, Semigroup, Monoid, Enum, Num, Ord, Fractional, Show)
 
 instance Combine (Merge a) where combine = const
 
@@ -147,13 +119,11 @@ instance Combine (Merge a) where combine = const
 -- Sum
 ---------------------------------------------------------------------------------------
 
--- |Values which are added each step
+-- |Values which are added each step,
 -- where different values mean states should not be combined.
 -- E.g., number of times a red ball is picked from an urn.
 newtype Sum a = Sum a
-    deriving Generic
-    deriving newtype (Eq, Enum, Num, Fractional, Show)
-    deriving anyclass Grouping
+    deriving newtype (Eq, Enum, Num, Ord, Fractional, Show)
 
 instance Combine (Sum a) where combine = const
 
@@ -171,11 +141,10 @@ instance Num a => Monoid (Sum a) where mempty = 0
 -- and combined additively for equal states.
 -- E.g., probabilities.
 newtype Product a = Product a
-    deriving Generic
     deriving newtype (Num, Fractional, Enum, Show)
 
-instance Grouping (Product a) where
-    grouping = FC.contramap (const ()) grouping
+instance Ord (Product a) where
+    compare _ _ = EQ
 
 -- This causes Data.List.group to act more like Data.Discrimination.group
 -- |WARNING! Defined @_ == _ = True@!
