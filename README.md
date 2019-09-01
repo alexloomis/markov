@@ -29,9 +29,7 @@ We will make a new type for the state.
 
 ```haskell
 newtype Extinction = Extinction Int
-    deriving Generic
-    deriving newtype (Eq, Num, Show)
-    deriving anyclass Grouping
+    deriving newtype (Eq, Num, Ord, Show)
 ```
 
 Combining identical states should not change the state,
