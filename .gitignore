@@ -3,3 +3,5 @@
 *.prof
 stack.yaml.lock
 .HTF/
+*.swp
+
