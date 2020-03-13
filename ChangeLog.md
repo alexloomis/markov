@@ -1,5 +1,10 @@
 # Changelog for markov
 
+## 0.4
+Changed randomPath.
+
+Added test for ramdomPath.
+
 ## 0.3.2
 Removed unnecessary dependencies.
 
