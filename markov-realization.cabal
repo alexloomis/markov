@@ -1,19 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.1.
---
--- see: https://github.com/sol/hpack
---
--- hash: b164fe328e9edef0858d48e61b56997280bd4bb2ea6ffe923afb24084a14efe6
-
 name:           markov-realization
-version:        0.3.3
+version:        0.4
 description:    Please see the README on GitHub at <https://github.com/alexloomis/markov#markov-tutorial>
 homepage:       https://github.com/alexloomis/markov
 bug-reports:    https://github.com/alexloomis/markov/issues
 author:         Alex Loomis
 maintainer:     atloomis@math.arizona.edu
-copyright:      2019 Alex Loomis
+copyright:      2020 Alex Loomis
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple

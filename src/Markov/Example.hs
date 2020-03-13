@@ -115,6 +115,9 @@ instance Markov ((,) (Sum Int)) Simple where
 -- |An urn contains balls of two colors.
 -- At each step, a ball is chosen uniformly at random from the urn
 -- and a ball of the same color is added.
+--
+-- >>> randomPath (mkStdGen 70) (Urn (2,5)) !! 8 :: (Product Double, Urn)
+-- (0.1648351648351649, Urn (2,13))
 newtype Urn = Urn (Int,Int)
     deriving newtype (Eq, Ord, Show)
 

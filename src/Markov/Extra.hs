@@ -4,6 +4,7 @@
 {-|
 Module      : Markov.Extra
 Maintainer  : atloomis@math.arizona.edu
+Description : Utilities for "Markov".
 Stability   : Experimental
 -}
 
