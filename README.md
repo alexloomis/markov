@@ -14,7 +14,7 @@ p(x,0) = q+r,
 p(x,x+1) = s.
 Let p(x,y) = 0 in all other cases.
 Suppose we wanted to find
-P\[Xₙ = j ∩ d = k],
+P\[Xₙ = j and d = k],
 where d denotes the number of transitions from a positive integer to zero.
 There are three values we need to track —
 extinctions, probability, and state.
@@ -52,7 +52,7 @@ instance Markov ((,) (Sum Int, Product Rational)) Extinction where
         where q = 0.1; r = 0.3; s = 0.6
 ```
 
-We can now easily see a list of states, deaths, and the probabilities.
+We can now see a list of states, extinctions, and the probabilities.
 
 __`> chain [pure 0 :: Sum Int :* Product Rational :* Extinction] !! 3`__
 ```
@@ -66,4 +66,5 @@ __`> chain [pure 0 :: Sum Int :* Product Rational :* Extinction] !! 3`__
 
 This means that starting from a state of zero,
 after three time steps there is a 51/500 chance
-that the state is zero and there has been one death.
+that the state is zero and there has been one extinction.
+

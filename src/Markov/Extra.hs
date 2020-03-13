@@ -1,5 +1,5 @@
-{-# LANGUAGE FlexibleContexts           #-}
-{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeOperators    #-}
 
 {-|
 Module      : Markov.Extra
@@ -14,9 +14,9 @@ module Markov.Extra
      , (>*<)
      ) where
 
-import Markov
 import qualified Control.Monad.Random as MR
-import qualified Data.List as DL
+import qualified Data.List            as DL
+import           Markov
 
 ---------------------------------------------------------------------------------------
 -- Misc
@@ -27,8 +27,9 @@ randomProduct :: (Real a, MR.MonadRandom m) => [(a, b)] -> m (a, b)
 randomProduct = MR.fromList . fmap (\x -> (x, toRational $ fst x))
 
 -- |Returns a single realization of a Markov chain.
-randomPath :: (Markov ((,) a) b, Real a, MR.RandomGen g) => (a,b) -> g -> [(a,b)]
-randomPath x g = fmap (`MR.evalRand` g) . iterate (>>= (randomProduct . step)) $ pure x
+randomPath :: (Markov ((,) a) b, Real a, MR.RandomGen g) => g -> b -> [(a,b)]
+randomPath g x = fmap (`MR.evalRand` g) . iterate (>>= (randomProduct . step))
+  $ pure (1,x)
 
 -- |Create a transition function from a transition matrix.
 -- Inputs should obey:
@@ -52,3 +53,4 @@ type a :* b = (a,b)
 (>*<) :: a -> b -> a :* b
 a >*< b = (a,b)
 infixl 5 >*<
+

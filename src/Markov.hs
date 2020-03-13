@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -38,7 +37,7 @@ module Markov (
 
 import Control.Comonad (Comonad, extract)
 
-import qualified Data.List as DL
+import qualified Data.List          as DL
 import qualified Data.List.NonEmpty as NE
 
 ---------------------------------------------------------------
@@ -141,8 +140,10 @@ instance Num a => Monoid (Sum a) where mempty = 0
 -- and combined additively for equal states.
 -- E.g., probabilities.
 newtype Product a = Product a
-    deriving newtype (Num, Fractional, Enum, Show)
+    deriving newtype (Enum, Fractional, Integral, Num, Real, Show)
 
+-- Don't sort by probability.
+-- |WARNING! Defined @compare _ _ = EQ@!
 instance Ord (Product a) where
     compare _ _ = EQ
 
@@ -155,3 +156,4 @@ instance Num a => Combine (Product a) where combine = (+)
 instance Num a => Semigroup (Product a) where x <> y = x * y
 
 instance Num a => Monoid (Product a) where mempty = 1
+
